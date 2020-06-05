@@ -6,6 +6,7 @@ class Server {
   constructor() {
     this.app = express();
     this.setup();
+    console.log(process.env.sdf);
   }
 
   setup() {
