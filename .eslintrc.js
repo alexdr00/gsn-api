@@ -5,7 +5,7 @@ module.exports = {
     jest: true,
   },
   extends: [
-    'airbnb-base',
+    'airbnb-typescript/base',
   ],
   globals: {
     Atomics: 'readonly',
@@ -15,6 +15,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 11,
     sourceType: 'module',
+    project: './tsconfig.json'
   },
   plugins: [
     '@typescript-eslint'
