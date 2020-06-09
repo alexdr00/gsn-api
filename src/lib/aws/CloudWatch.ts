@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import { InputLogEvent, InputLogEvents } from 'aws-sdk/clients/cloudwatchlogs';
+import { InputLogEvents } from 'aws-sdk/clients/cloudwatchlogs';
 import { v4 as uuidv4 } from 'uuid';
 import { ErrorObject } from 'serialize-error';
 import BaseAWSConfig from './BaseAWSConfig';
@@ -16,12 +16,25 @@ class CloudWatch extends BaseAWSConfig {
   }
 
   public async sendLogError(log: Log<ErrorObject>): Promise<void> {
+    const error: ErrorObject = log.body;
     const now = Date.now();
     const streamName = `${now}-${uuidv4()}`;
 
     await this.createLogStream(streamName);
 
-    const logEvents = this.createErrorLogEvents(log);
+    const { stack, ...errorWithoutStack } = error;
+    errorWithoutStack.level = log.level;
+    const logEvents: InputLogEvents = [
+      {
+        timestamp: new Date().getTime(),
+        message: JSON.stringify(errorWithoutStack),
+      },
+      // "stack" is being sent separately since the it doesn't look human-readable with JSON.stringify.
+      {
+        timestamp: new Date().getTime(),
+        message: stack || 'Error has no stack',
+      },
+    ];
     this.createLogEvents(logEvents, streamName);
   }
 
@@ -39,34 +52,6 @@ class CloudWatch extends BaseAWSConfig {
     ];
     this.createLogEvents(logEvents, streamName);
   }
-
-  private createErrorLogEvents = (log: Log<ErrorObject>): InputLogEvents => {
-    const error: ErrorObject = log.body;
-    const errorProperties = Object.entries(error);
-    const timestamp = new Date().getTime();
-    const logEvents = errorProperties.map((errorProperty): InputLogEvent => {
-      const [errorPropertyName, errorPropertyValue] = errorProperty;
-
-      return {
-        timestamp,
-        message: `${errorPropertyName}: ${errorPropertyValue}`,
-      };
-    });
-
-    // The next lines add a stringified version of the error.
-    // The reason: Even though we already have all the properties in the log one by one
-    // per Log Event, it'd be cool to have the stringified version of it at the top so we can see the whole
-    // error object at first glance.
-    // Also: "stack" property is being deleted since the stack doesn't look good with JSON.stringify
-    // This is not a problem since we already have the stack prettified down below the log events.
-    const { stack, ...errorWithoutStack } = error;
-    errorWithoutStack.level = log.level;
-    logEvents.unshift({
-      timestamp,
-      message: JSON.stringify(errorWithoutStack),
-    });
-    return logEvents;
-  };
 
   private createLogEvents(logEvents: InputLogEvents, streamName: string) {
     const params = {
