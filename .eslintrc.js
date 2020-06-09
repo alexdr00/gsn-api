@@ -23,6 +23,15 @@ module.exports = {
   rules: {
     'no-console': 'off',
     'import/extensions': 'off',
+    'max-len': ["error", 
+      { 
+        "code": 120,
+        "ignoreComments": true,
+        "ignoreUrls": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true,
+      }
+    ]
   },
   settings: {
     'import/resolver': {

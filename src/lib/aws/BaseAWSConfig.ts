@@ -8,10 +8,10 @@ interface AWSBaseConfig {
 }
 
 class BaseAWSConfig {
-  public baseConfig: AWSBaseConfig;
+  public baseAWSConfig: AWSBaseConfig;
 
   constructor() {
-    this.baseConfig = {
+    this.baseAWSConfig = {
       accessKeyId: AWS_ACCESS_KEY,
       secretAccessKey: AWS_SECRET_KEY,
       apiVersion: '2014-03-28',

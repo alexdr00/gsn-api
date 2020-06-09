@@ -14,6 +14,7 @@ class Server {
   playground() {
     const error = new Error('Aca hubo un error');
     Logger.error(serializeError(error));
+    // Logger.success({ eso: 'mijo', cat: { tehr: { casr: [1, 2, 3] } } });
     // const err = new Error('sdfs');
     // Logger.info('Okayy');
   }
