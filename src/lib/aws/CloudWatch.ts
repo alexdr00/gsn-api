@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ErrorObject } from 'serialize-error';
 import BaseAWSConfig from './BaseAWSConfig';
 import { Log } from '../../types/interfaces/Log';
+import extractErrorStackFromLog from '../../helpers/extractErrorStack';
 
 const { AWS_LOG_GROUP } = process.env;
 
@@ -16,23 +17,20 @@ class CloudWatch extends BaseAWSConfig {
   }
 
   public async sendLogError(log: Log<ErrorObject>): Promise<void> {
-    const error: ErrorObject = log.body;
     const now = Date.now();
     const streamName = `${now}-${uuidv4()}`;
 
     await this.createLogStream(streamName);
 
-    const { stack, ...errorWithoutStack } = error;
-    errorWithoutStack.level = log.level;
+    const { stack, logWithoutStack } = extractErrorStackFromLog(log);
     const logEvents: InputLogEvents = [
       {
         timestamp: new Date().getTime(),
-        message: JSON.stringify(errorWithoutStack),
+        message: JSON.stringify(logWithoutStack),
       },
-      // "stack" is being sent separately since the it doesn't look human-readable with JSON.stringify.
       {
         timestamp: new Date().getTime(),
-        message: stack || 'Error has no stack',
+        message: stack,
       },
     ];
     this.createLogEvents(logEvents, streamName);

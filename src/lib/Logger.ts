@@ -1,12 +1,17 @@
 import chalk from 'chalk';
+import os from 'os';
 import { ErrorObject } from 'serialize-error';
 import { format } from 'date-fns';
 import Envs from '../types/enums/envs';
 import CloudWatch from './aws/CloudWatch';
-import { Level, Log } from '../types/interfaces/Log';
+import { Level, Log, LogExtended } from '../types/interfaces/Log';
+import extractErrorStackFromLog from '../helpers/extractErrorStack';
 
-const { ENVIRONMENT } = process.env;
+const {
+  ENVIRONMENT, AWS_REGION, SERVICE_NAME, APP_NAME,
+} = process.env;
 
+const hostname = os.hostname();
 const cloudWatch = new CloudWatch();
 
 class Logger {
@@ -43,27 +48,41 @@ class Logger {
   }
 
   private static log<T>(infoToLog: Log<T>): void {
-    const logInfo = { ...infoToLog };
-    const { level, body } = infoToLog;
+    const { level } = infoToLog;
     const colorize = Logger.colorizeByLevel(level);
-    const now = new Date();
-    //                         YYYY/MM/DD HH:MM:SS
-    const dateFormatPattern = 'yyyy/MMM/dd H:mm:ss';
-    logInfo.date = format(now, dateFormatPattern);
+
+    const infoLogExtended: LogExtended<T> = Logger.extendLog(infoToLog);
 
     if (level === 'error') {
-      const { stack, ...errorWithoutStack } = body as ErrorObject;
-      errorWithoutStack.level = level;
-      console.log(colorize(JSON.stringify(errorWithoutStack, null, 2)));
+      const { stack, logWithoutStack } = extractErrorStackFromLog(infoLogExtended);
+      console.log(colorize(JSON.stringify(logWithoutStack, null, 2)));
       console.log(colorize(stack));
     } else {
-      console.log(colorize(JSON.stringify(logInfo, null, 2)));
+      console.log(colorize(JSON.stringify(infoLogExtended, null, 2)));
     }
 
-    this.sendLogToCloudWatch(infoToLog);
+    this.sendLogToCloudWatch(infoLogExtended);
   }
 
-  private static sendLogToCloudWatch<T>(infoToLog: Log<T>) {
+  private static extendLog<T>(infoToLog: Log<T>): LogExtended<T> {
+    const now = new Date();
+    // ----------------------  YYYY/MM/DD HH:MM:SS (Timezone GMT)
+    const dateFormatPattern = 'yyyy/MMM/dd H:mm:ss (OOOO)';
+
+    // All the info common to each type of log will go here.
+    return {
+      ...infoToLog,
+      hostname,
+      date: format(now, dateFormatPattern),
+      awsRegion: AWS_REGION,
+      serviceName: SERVICE_NAME,
+      appName: APP_NAME,
+      environment: ENVIRONMENT,
+      timestamp: Date.now(),
+    };
+  }
+
+  private static sendLogToCloudWatch<T>(infoToLog: LogExtended<T>) {
     const envsToSendLogs = [Envs.Development, Envs.Stagging, Envs.Production];
     const currentEnv = ENVIRONMENT as Envs;
 
