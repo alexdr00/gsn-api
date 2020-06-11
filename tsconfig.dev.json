@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.common.json",
+  "include": ["src/**/*", "index.ts", "__tests__/**/*", "migrations/**/*", "*"],
+  "compilerOptions": {
+    "baseUrl": "src"
+  }
+}
