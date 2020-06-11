@@ -1,6 +1,4 @@
 import express from 'express';
-import { serializeError } from 'serialize-error';
-import Logger from './lib/Logger';
 
 class Server {
   public app: express.Application;
@@ -8,15 +6,6 @@ class Server {
   constructor() {
     this.app = express();
     this.setup();
-    this.playground();
-  }
-
-  playground() {
-    // const error = new Error('Aca hubo un error');
-    Logger.info('just me');
-    // Logger.success({ eso: 'mijo', cat: { tehr: { casr: [1, 2, 3] } } });
-    // const err = new Error('sdfs');
-    // Logger.info('Okayy');
   }
 
   setup() {
