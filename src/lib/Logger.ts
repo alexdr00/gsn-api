@@ -3,7 +3,7 @@ import os from 'os';
 import { ErrorObject } from 'serialize-error';
 import { format } from 'date-fns';
 import Envs from '../types/enums/envs';
-import CloudWatch from './aws/CloudWatch';
+import CloudLogger from './CloudLogger';
 import { Level, Log, LogExtended } from '../types/interfaces/Log';
 import extractErrorStackFromLog from '../helpers/extractErrorStack';
 
@@ -12,7 +12,6 @@ const {
 } = process.env;
 
 const hostname = os.hostname();
-const cloudWatch = new CloudWatch();
 
 class Logger {
   public static info<T>(infoToLog: T): void {
@@ -92,11 +91,11 @@ class Logger {
     }
 
     if (infoToLog.level === 'error') {
-      cloudWatch.sendLogError(infoToLog);
+      CloudLogger.sendLogError(infoToLog);
       return;
     }
 
-    cloudWatch.sendLog(infoToLog);
+    CloudLogger.sendLog(infoToLog);
   }
 
   private static colorizeByLevel(level: Level): <T>(infoToColorize: T) => T {

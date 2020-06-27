@@ -5,7 +5,6 @@ dotenv.config();
 
 import server from './src/server';
 
-
 const { app } = server;
 
 const PORT = process.env.SERVER_PORT || 5000;

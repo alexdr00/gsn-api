@@ -8,11 +8,11 @@ class Server {
     this.setup();
   }
 
-  setup() {
+  private setup() {
     this.mountRoutes();
   }
 
-  mountRoutes() {
+  private mountRoutes() {
     const router = express.Router();
     router.use('/health', (req, res) => res.send({ message: 'ok' }));
 
