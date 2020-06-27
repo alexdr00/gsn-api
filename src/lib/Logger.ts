@@ -82,11 +82,11 @@ class Logger {
     };
   }
 
-  private static sendLogToCloudWatch<T>(infoToLog: LogExtended<T>) {
+  private static sendLogToCloudWatch<T>(infoToLog: LogExtended<T>): void {
     const envsToSendLogs = [Envs.Development, Envs.Stagging, Envs.Production];
     const currentEnv = ENVIRONMENT as Envs;
 
-    envsToSendLogs.push(Envs.Local); // Leave this just for testing purposes, delete when needed no longer.
+    envsToSendLogs.push(Envs.Local); // Leave this just for testing purposes, delete when no longer needed.
     if (!envsToSendLogs.includes(currentEnv)) {
       return;
     }
