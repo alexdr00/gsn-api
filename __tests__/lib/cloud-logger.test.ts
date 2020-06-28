@@ -107,7 +107,7 @@ describe('lib/aws/CloudLogger', () => {
       expect(logEvents[1].message).toEqual(stack);
     });
 
-    it('Sends a timestamp', async () => {
+    it('Sends a timestamp for each log event', async () => {
       await sendLogError();
       const fnArguments = context.putLogEvents.mock.calls[0];
       const logEvents = fnArguments[0];

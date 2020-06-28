@@ -1,0 +1,23 @@
+version: '3'
+services:
+  postgres:
+    container_name: "postgres"
+    image: 'postgres:12'
+    env_file:
+      - .env
+    restart: always
+    command: "-p ${POSTGRES_PORT}"
+  gsn-api:
+    container_name: "gsn-api"
+    depends_on:
+      - postgres
+    build:
+      dockerfile: Dockerfile.dev
+      context: .
+    restart: always
+    volumes:
+      - /home/gsn-api/node_modules
+      - .:/home/gsn-api
+    tty: true
+    env_file:
+      - .env
