@@ -1,5 +1,10 @@
 import { Pool, QueryResult } from 'pg';
 
+type QueryConfig = {
+  types?: string[],
+  rowMode?: 'array'
+};
+
 class Pg {
   private pool: Pool;
 
@@ -13,8 +18,14 @@ class Pg {
     });
   }
 
-  public query<T>(queryStatement: string, queryProperties: T[]): Promise<QueryResult> {
-    return this.pool.query(queryStatement, queryProperties);
+  public async query<T>(queryText: string, queryValues?: T[], queryConfig?: QueryConfig): Promise<object[] | [][]> {
+    const result = await this.pool.query({
+      text: queryText,
+      values: queryValues,
+      ...queryConfig,
+    });
+
+    return result.rows;
   }
 }
 

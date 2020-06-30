@@ -8,7 +8,8 @@
     "ut:watch": "jest --watch",
     "tsc": "tsc -p tsconfig.prod.json",
     "start": "npm run tsc && node ./dist/index.js",
-    "dev": "ts-node-dev --project tsconfig.dev.json --respawn --type-check ./index.ts"
+    "dev": "ts-node-dev --project tsconfig.dev.json --respawn --type-check ./index.ts",
+    "migrate:schema": "ts-node ./migrations/runners/schema.ts"
   },
   "repository": {
     "type": "git",

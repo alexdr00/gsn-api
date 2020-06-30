@@ -3,7 +3,7 @@ import { v4 } from 'uuid';
 import { mocked } from 'ts-jest/utils';
 import extractErrorStackFromLog from 'helpers/extractErrorStack';
 import { serializeError } from 'serialize-error';
-import cloudWatchLogs from 'proxies/aws/CloudWatchLogs';
+import cloudWatchLogs from 'proxies/aws/cloudWatchLogs';
 
 jest.mock('proxies/aws/CloudWatchLogs');
 jest.mock('uuid');

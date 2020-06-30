@@ -4,7 +4,7 @@ import { ErrorObject } from 'serialize-error';
 import BaseAWSConfig from '../proxies/aws/BaseAWSConfig';
 import { Log } from '../types/interfaces/Log';
 import extractErrorStackFromLog from '../helpers/extractErrorStack';
-import cloudWatchLogs from '../proxies/aws/CloudWatchLogs';
+import cloudWatchLogs from '../proxies/aws/cloudWatchLogs';
 
 class CloudLogger extends BaseAWSConfig {
   public static async sendLogError(log: Log<ErrorObject>): Promise<void> {

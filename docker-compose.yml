@@ -6,7 +6,8 @@ services:
     env_file:
       - .env
     restart: always
-    command: "-p ${POSTGRES_PORT}"
+    ports:
+    - "${POSTGRES_PORT}:5432"
   gsn-api:
     container_name: "gsn-api"
     depends_on:
