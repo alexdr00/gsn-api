@@ -24,7 +24,7 @@ class MigrationsRunner {
 
       await MigrationsRunner.runMigration(migrationPath);
       await MigrationsRunner.markMigrationAsExecuted(migrationName);
-      Logger.success(`Migration executed successfully: ${migrationName}`);
+      Logger.success(`${migrationType} migration executed successfully: ${migrationFileName}`);
     });
 
     // eslint-disable-next-line
@@ -33,7 +33,7 @@ class MigrationsRunner {
       await migrate();
     }
 
-    Logger.success('All migrations have been executed');
+    Logger.success(`All ${migrationType} migrations have been executed`);
     process.exit(0);
   }
 
@@ -42,7 +42,7 @@ class MigrationsRunner {
       CREATE TABLE IF NOT EXISTS migrations (
         id SERIAL PRIMARY KEY,
         migration_name VARCHAR(255),
-        executed_on TIMESTAMP DEFAULT NOW()
+        executed_on TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
       );
     `;
 

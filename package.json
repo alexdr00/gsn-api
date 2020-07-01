@@ -10,8 +10,9 @@
     "tsc": "tsc -p tsconfig.prod.json",
     "start": "npm run tsc && node ./dist/index.js",
     "dev": "ts-node-dev --project tsconfig.dev.json --respawn --type-check ./index.ts",
-    "migrate:schema": "npm run ts-node ./migrations/runners/schema.ts",
-    "migrate:all": "npm run migrate:schema"
+    "migrate:schema": "npm run ts-node migrations/runners/schema.ts",
+    "migrate:trigger": "npm run ts-node migrations/runners/trigger.ts",
+    "migrate:all": "npm-run-all -s migrate:trigger migrate:schema"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.3",
     "morgan": "^1.10.0",
+    "npm-run-all": "^4.1.5",
     "pg": "^8.2.1",
     "redis": "^3.0.2",
     "serialize-error": "^7.0.1",
