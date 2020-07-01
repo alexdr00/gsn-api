@@ -5,6 +5,8 @@ export type Level = 'error' | 'warning' | 'success' | 'info';
 export interface Log<T> {
   body: T | ErrorObject,
   level: Level,
+  detail?: string,
+  debugParams?: object
 }
 
 export interface LogExtended<T> extends Log<T> {

@@ -1,9 +1,10 @@
-import { Pool, QueryResult } from 'pg';
+import { Pool } from 'pg';
 
-type QueryConfig = {
+interface QueryParams {
   types?: string[],
-  rowMode?: 'array'
-};
+  rowMode?: 'array',
+  queryId: string
+}
 
 class Pg {
   private pool: Pool;
@@ -18,14 +19,22 @@ class Pg {
     });
   }
 
-  public async query<T>(queryText: string, queryValues?: T[], queryConfig?: QueryConfig): Promise<object[] | [][]> {
-    const result = await this.pool.query({
+  public async query<T>(queryText: string, queryValues: T[], queryParams: QueryParams): Promise<object[] | [][]> {
+    const queryConfig = {
       text: queryText,
       values: queryValues,
-      ...queryConfig,
-    });
+      ...queryParams,
+    };
 
-    return result.rows;
+    try {
+      const result = await this.pool.query(queryConfig);
+
+      return result.rows;
+    } catch (error) {
+      const { queryId } = queryParams;
+      error.queryId = queryId;
+      throw error;
+    }
   }
 }
 

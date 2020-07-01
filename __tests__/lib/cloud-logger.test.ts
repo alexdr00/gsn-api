@@ -5,7 +5,7 @@ import extractErrorStackFromLog from 'helpers/extractErrorStack';
 import { serializeError } from 'serialize-error';
 import cloudWatchLogs from 'proxies/aws/cloudWatchLogs';
 
-jest.mock('proxies/aws/CloudWatchLogs');
+jest.mock('proxies/aws/cloudWatchLogs');
 jest.mock('uuid');
 jest.mock('helpers/extractErrorStack');
 

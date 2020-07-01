@@ -1,7 +1,6 @@
 /* eslint-disable import/first */
 require('dotenv').config();
 
-import { serializeError } from 'serialize-error';
 import pg from '../src/proxies/db/pg';
 import Logger from '../src/lib/Logger';
 
@@ -15,21 +14,17 @@ class MigrationsRunner {
     await MigrationsRunner.init();
 
     const migrationProcesses = migrationFileNames.map((migrationFileName: string) => async () => {
-      const hasMigrationBeenExecuted = await MigrationsRunner.checkMigrationHasBeenExecuted(migrationFileName);
+      const migrationPath = `./types/${migrationType}/${migrationFileName}`;
+      const migrationName = `${migrationType}_${migrationFileName}`;
+
+      const hasMigrationBeenExecuted = await MigrationsRunner.checkMigrationHasBeenExecuted(migrationName);
       if (hasMigrationBeenExecuted) {
         return;
       }
 
-      const migrationPath = `./types/${migrationType}/${migrationFileName}`;
-      const migrationName = `${migrationType}_${migrationFileName}`;
-
-      try {
-        await MigrationsRunner.runMigration(migrationPath);
-        await MigrationsRunner.markMigrationAsExecuted(migrationName);
-        console.log('all good');
-      } catch (error) {
-        console.log(error);
-      }
+      await MigrationsRunner.runMigration(migrationPath);
+      await MigrationsRunner.markMigrationAsExecuted(migrationName);
+      Logger.success(`Migration executed successfully: ${migrationName}`);
     });
 
     // eslint-disable-next-line
@@ -38,25 +33,24 @@ class MigrationsRunner {
       await migrate();
     }
 
-    console.log('all migrations run');
+    Logger.success('All migrations have been executed');
     process.exit(0);
   }
 
   private static async init(): Promise<void> {
     const query = `
       CREATE TABLE IF NOT EXISTS migrations (
-        id INT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         migration_name VARCHAR(255),
         executed_on TIMESTAMP DEFAULT NOW()
       );
     `;
 
     try {
-      await pg.query(query);
+      await pg.query(query, [], { queryId: 'InitMigrations' });
     } catch (error) {
-      const serializedError = serializeError(error);
-      // Logger.error(serializedError);
-      console.log(serializedError);
+      const detail = 'Failed to create "migrations" table';
+      Logger.error(error, detail);
       process.exit(1);
     }
   }
@@ -67,10 +61,9 @@ class MigrationsRunner {
       const Migration = require(migrationPath).default;
       await Migration.run();
     } catch (error) {
-      // console.log(error);
-      // Logger.warn(`Failed to run: ${migrationPath}`);
-      const e = serializeError(error);
-      Logger.error(e);
+      const detail = `Failed to run migration: ${migrationPath}`;
+      const debugParams = { migrationPath };
+      Logger.error(error, detail, debugParams);
       process.exit(1);
     }
   }
@@ -83,27 +76,28 @@ class MigrationsRunner {
 
     const values = [migrationName];
     try {
-      await pg.query(query, values);
+      await pg.query(query, values, { queryId: 'MarkMigrationAsExecuted' });
     } catch (error) {
-      console.log(error);
-      // logger.warn(`Failed to mark as executed: ${migrationIdentifier}`);
-      // logger.error(error);
+      const detail = `Failed to mark migration as executed: ${migrationName}`;
+      const debugParams = { migrationName };
+      Logger.error(error, detail, debugParams);
       process.exit(1);
     }
   }
 
   private static async checkMigrationHasBeenExecuted(migrationName: string): Promise<boolean> {
-    try {
-      const query = `
-        SELECT * FROM migrations WHERE migration_name = $1
-      `;
+    const query = `
+      SELECT * FROM migrations WHERE migration_name = $1
+    `;
 
-      const values = [migrationName];
-      const executedMigrations = await pg.query(query, values);
+    const values = [migrationName];
+    try {
+      const executedMigrations = await pg.query(query, values, { queryId: 'CheckMigrationHasBeenExecuted' });
       return executedMigrations.length > 0;
     } catch (error) {
-      console.log(error);
-      // logger.error(error);
+      const detail = `Failed to mark migration as executed: ${migrationName}`;
+      const debugParams = { migrationName };
+      Logger.error(error, detail, debugParams);
       return process.exit(1);
     }
   }

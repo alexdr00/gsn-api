@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import os from 'os';
-import { ErrorObject } from 'serialize-error';
+import { ErrorObject, serializeError } from 'serialize-error';
 import { format } from 'date-fns';
 import Envs from '../types/enums/envs';
 import CloudLogger from './CloudLogger';
@@ -30,10 +30,13 @@ class Logger {
     Logger.log(log);
   }
 
-  public static error(errorToLog: ErrorObject): void {
+  public static error(errorToLog: Error, detail?: string, debugParams?: object): void {
+    const serializedError = serializeError(errorToLog);
     const err: Log<ErrorObject> = {
       level: 'error',
-      body: errorToLog,
+      body: serializedError,
+      detail,
+      debugParams,
     };
     Logger.log(err);
   }
@@ -57,7 +60,7 @@ class Logger {
       console.log(colorize(JSON.stringify(logWithoutStack, null, 2)));
       console.log(colorize(stack));
     } else {
-      console.log(colorize(JSON.stringify(infoLogExtended, null, 2)));
+      console.log(colorize(infoLogExtended.body));
     }
 
     this.sendLogToCloudWatch(infoLogExtended);
