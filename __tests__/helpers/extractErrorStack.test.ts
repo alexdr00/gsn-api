@@ -1,6 +1,6 @@
 import extractErrorStackFromLog from 'helpers/extractErrorStack';
 import { ErrorObject, serializeError } from 'serialize-error';
-import { Log } from 'types/interfaces/Log';
+import { Log } from 'types/interfaces/log';
 
 describe('helper/extractErrorStackFromLog', () => {
   it('Deletes stack from log object and returns the stack and the error without that stack in different properties', () => {

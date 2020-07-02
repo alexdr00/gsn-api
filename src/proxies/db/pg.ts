@@ -28,7 +28,8 @@ class Pg {
 
     try {
       const result = await this.pool.query(queryConfig);
-
+  
+      console.log({result});
       return result.rows;
     } catch (error) {
       const { queryId } = queryParams;

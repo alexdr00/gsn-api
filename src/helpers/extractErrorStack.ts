@@ -1,5 +1,5 @@
 import { ErrorObject } from 'serialize-error';
-import { Log } from '../types/interfaces/Log';
+import { Log } from '../types/interfaces/log';
 import { NO_STACK } from '../constants/errors/generic';
 
 const extractErrorStackFromLog = (log: Log<ErrorObject>): { logWithoutStack: Log<ErrorObject>, stack: string } => {

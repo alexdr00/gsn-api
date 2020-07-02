@@ -9,7 +9,10 @@ class CloudWatchLogs extends BaseAWSConfig {
 
   constructor() {
     super();
-    this.cloudWatchLogs = new AWS.CloudWatchLogs(this.baseAWSConfig);
+    const cloudWatchLogsConfig = {
+      apiVersion: '2014-03-28',
+    };
+    this.cloudWatchLogs = new AWS.CloudWatchLogs({ ...this.baseAWSConfig, ...cloudWatchLogsConfig });
   }
 
   public async createLogStream(streamName: string): Promise<{}> {

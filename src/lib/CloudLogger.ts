@@ -2,7 +2,7 @@ import { InputLogEvents } from 'aws-sdk/clients/cloudwatchlogs';
 import { v4 as uuidv4 } from 'uuid';
 import { ErrorObject } from 'serialize-error';
 import BaseAWSConfig from '../proxies/aws/BaseAWSConfig';
-import { Log } from '../types/interfaces/Log';
+import { Log } from '../types/interfaces/log';
 import extractErrorStackFromLog from '../helpers/extractErrorStack';
 import cloudWatchLogs from '../proxies/aws/cloudWatchLogs';
 

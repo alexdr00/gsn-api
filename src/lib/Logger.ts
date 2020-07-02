@@ -4,7 +4,7 @@ import { ErrorObject, serializeError } from 'serialize-error';
 import { format } from 'date-fns';
 import Envs from '../types/enums/envs';
 import CloudLogger from './CloudLogger';
-import { Level, Log, LogExtended } from '../types/interfaces/Log';
+import { Level, Log, LogExtended } from '../types/interfaces/log';
 import extractErrorStackFromLog from '../helpers/extractErrorStack';
 
 const {

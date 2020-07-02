@@ -7,7 +7,8 @@ services:
       - .env
     restart: always
     ports:
-    - "${POSTGRES_PORT}:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    command: "-p ${POSTGRES_PORT}"
   gsn-api:
     container_name: "gsn-api"
     depends_on:
@@ -17,8 +18,10 @@ services:
       context: .
     restart: always
     volumes:
-      - /home/gsn-api/node_modules
+      - ./node_modules:/home/gsn-api/node_modules
       - .:/home/gsn-api
     tty: true
     env_file:
       - .env
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
