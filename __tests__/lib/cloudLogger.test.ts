@@ -1,13 +1,10 @@
 import CloudLogger from 'lib/CloudLogger';
 import { v4 } from 'uuid';
 import { mocked } from 'ts-jest/utils';
-import extractErrorStackFromLog from 'helpers/extractErrorStack';
-import { serializeError } from 'serialize-error';
 import cloudWatchLogs from 'proxies/aws/cloudWatchLogs';
 
 jest.mock('proxies/aws/cloudWatchLogs');
 jest.mock('uuid');
-jest.mock('helpers/extractErrorStack');
 
 describe('lib/aws/CloudLogger', () => {
   let context: Record<string, any> = {};
@@ -75,17 +72,16 @@ describe('lib/aws/CloudLogger', () => {
   describe('Given sendLogError it:', () => {
     beforeEach(() => {
       const error = new Error('Testing Error!!');
-      context.error = serializeError(error);
+      context.error = error;
       context.stack = 'test stack';
     });
 
     const sendLogError = async () => {
       const {
-        uuid, now, errorLogMessage, stack, error,
+        uuid, now, errorLogMessage,
       } = context;
       global.Date.now = jest.fn().mockReturnValue(now);
       mocked(v4).mockReturnValue(uuid);
-      mocked(extractErrorStackFromLog).mockReturnValue({ stack, logWithoutStack: error });
 
       await CloudLogger.sendLogError(errorLogMessage);
     };

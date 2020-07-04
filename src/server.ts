@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import authRouter from './routers/authRouter';
+import errorHander from './middleware/errorHander';
 
 class Server {
   public app: express.Application;
@@ -14,12 +15,17 @@ class Server {
   private setup() {
     this.useMiddleware();
     this.mountRoutes();
+    this.useErrorHandlingMiddleware();
   }
 
   private useMiddleware() {
     this.app.use(bodyParser.urlencoded({ extended: false }));
     this.app.use(bodyParser.json());
     this.app.use(morgan('dev'));
+  }
+
+  private useErrorHandlingMiddleware() {
+    this.app.use(errorHander);
   }
 
   private mountRoutes() {

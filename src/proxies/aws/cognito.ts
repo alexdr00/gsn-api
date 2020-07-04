@@ -1,8 +1,8 @@
-// import AWS from 'aws-sdk';
 import fetch from 'node-fetch';
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import BaseAWSConfig from './BaseAWSConfig';
 import { SignUpBody } from '../../types/interfaces/auth';
+import verror from '../verror';
 
 // @ts-ignore
 global.fetch = fetch;
@@ -32,7 +32,7 @@ class Cognito extends BaseAWSConfig {
     return new Promise((resolve, reject) => {
       this.userPool.signUp(email, password, attributeList, [], (err, result) => {
         if (err) {
-          reject(err);
+          reject(verror.createError(err));
         }
 
         resolve(result);

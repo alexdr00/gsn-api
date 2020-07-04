@@ -1,6 +1,7 @@
 import AWS from 'aws-sdk';
 import { InputLogEvents } from 'aws-sdk/clients/cloudwatchlogs';
 import BaseAWSConfig from './BaseAWSConfig';
+import verror from '../verror';
 
 const { AWS_LOG_GROUP } = process.env;
 
@@ -24,7 +25,7 @@ class CloudWatchLogs extends BaseAWSConfig {
     return new Promise((resolve, reject) => {
       this.cloudWatchLogs.createLogStream(params, (err, data) => {
         if (err) {
-          reject(err);
+          reject(verror.createError(err));
         } else {
           resolve(data);
         }

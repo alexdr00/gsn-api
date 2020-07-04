@@ -1,11 +1,10 @@
 import chalk from 'chalk';
 import os from 'os';
-import { ErrorObject, serializeError } from 'serialize-error';
 import { format } from 'date-fns';
 import Envs from '../types/enums/envs';
 import CloudLogger from './CloudLogger';
 import { Level, Log, LogExtended } from '../types/interfaces/log';
-import extractErrorStackFromLog from '../helpers/extractErrorStack';
+import verror from '../proxies/verror';
 
 const {
   ENVIRONMENT, AWS_REGION, SERVICE_NAME, APP_NAME,
@@ -31,14 +30,13 @@ class Logger {
   }
 
   public static error(errorToLog: Error, detail?: string, debugParams?: object): void {
-    const serializedError = serializeError(errorToLog);
-    const err: Log<ErrorObject> = {
+    const err: Log<Error> = {
       level: 'error',
-      body: serializedError,
+      body: errorToLog,
       detail,
       debugParams,
     };
-    Logger.log(err);
+    Logger.logError(err);
   }
 
   public static success<T>(infoToLog: T): void {
@@ -49,20 +47,20 @@ class Logger {
     Logger.log(log);
   }
 
+  private static logError(errorLog: Log<Error>): void {
+    const colorize = Logger.colorizeByLevel('error');
+
+    const infoErrorExtended: LogExtended<Error> = Logger.extendLog(errorLog);
+    console.log(colorize(verror.getFullStack(errorLog.body)));
+    this.sendLogToCloudWatch(infoErrorExtended);
+  }
+
   private static log<T>(infoToLog: Log<T>): void {
     const { level } = infoToLog;
     const colorize = Logger.colorizeByLevel(level);
 
     const infoLogExtended: LogExtended<T> = Logger.extendLog(infoToLog);
-
-    if (level === 'error') {
-      const { stack, logWithoutStack } = extractErrorStackFromLog(infoLogExtended);
-      console.log(colorize(JSON.stringify(logWithoutStack, null, 2)));
-      console.log(colorize(stack));
-    } else {
-      console.log(colorize(infoLogExtended.body));
-    }
-
+    console.log(colorize(infoLogExtended.body));
     this.sendLogToCloudWatch(infoLogExtended);
   }
 

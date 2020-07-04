@@ -3,8 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { ErrorObject } from 'serialize-error';
 import BaseAWSConfig from '../proxies/aws/BaseAWSConfig';
 import { Log } from '../types/interfaces/log';
-import extractErrorStackFromLog from '../helpers/extractErrorStack';
 import cloudWatchLogs from '../proxies/aws/cloudWatchLogs';
+import verror from '../proxies/verror';
 
 class CloudLogger extends BaseAWSConfig {
   public static async sendLogError(log: Log<ErrorObject>): Promise<void> {
@@ -13,15 +13,14 @@ class CloudLogger extends BaseAWSConfig {
 
     await cloudWatchLogs.createLogStream(streamName);
 
-    const { stack, logWithoutStack } = extractErrorStackFromLog(log);
     const logEvents: InputLogEvents = [
       {
         timestamp: new Date().getTime(),
-        message: JSON.stringify(logWithoutStack),
+        message: JSON.stringify(log),
       },
       {
         timestamp: new Date().getTime(),
-        message: stack,
+        message: verror.getFullStack(log.body),
       },
     ];
     await cloudWatchLogs.putLogEvents(logEvents, streamName);

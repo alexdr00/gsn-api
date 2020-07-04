@@ -3,7 +3,7 @@ import { ErrorObject } from 'serialize-error';
 export type Level = 'error' | 'warning' | 'success' | 'info';
 
 export interface Log<T> {
-  body: T | ErrorObject,
+  body: T | Error,
   level: Level,
   detail?: string,
   debugParams?: object
