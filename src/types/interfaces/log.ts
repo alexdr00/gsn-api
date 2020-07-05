@@ -1,5 +1,3 @@
-import { ErrorObject } from 'serialize-error';
-
 export type Level = 'error' | 'warning' | 'success' | 'info';
 
 export interface Log<T> {

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import os from 'os';
 import { format } from 'date-fns';
-import Envs from '../types/enums/envs';
+import Envs from '../types/enums/Envs';
 import CloudLogger from './CloudLogger';
 import { Level, Log, LogExtended } from '../types/interfaces/log';
 import verror from '../proxies/verror';
@@ -52,7 +52,7 @@ class Logger {
 
     const infoErrorExtended: LogExtended<Error> = Logger.extendLog(errorLog);
     console.log(colorize(verror.getFullStack(errorLog.body)));
-    this.sendLogToCloudWatch(infoErrorExtended);
+    this.sendErrorLogToCloudWatch(infoErrorExtended);
   }
 
   private static log<T>(infoToLog: Log<T>): void {
@@ -91,12 +91,19 @@ class Logger {
       return;
     }
 
-    if (infoToLog.level === 'error') {
-      CloudLogger.sendLogError(infoToLog);
+    CloudLogger.sendLog(infoToLog);
+  }
+
+  private static sendErrorLogToCloudWatch(infoToLog: LogExtended<Error>): void {
+    const envsToSendLogs = [Envs.Development, Envs.Stagging, Envs.Production];
+    const currentEnv = ENVIRONMENT as Envs;
+
+    envsToSendLogs.push(Envs.Local); // Leave this just for testing purposes, delete when no longer needed.
+    if (!envsToSendLogs.includes(currentEnv)) {
       return;
     }
 
-    CloudLogger.sendLog(infoToLog);
+    CloudLogger.sendLogError(infoToLog);
   }
 
   private static colorizeByLevel(level: Level): <T>(infoToColorize: T) => T {

@@ -1,13 +1,12 @@
 import { InputLogEvents } from 'aws-sdk/clients/cloudwatchlogs';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorObject } from 'serialize-error';
 import BaseAWSConfig from '../proxies/aws/BaseAWSConfig';
 import { Log } from '../types/interfaces/log';
 import cloudWatchLogs from '../proxies/aws/cloudWatchLogs';
 import verror from '../proxies/verror';
 
 class CloudLogger extends BaseAWSConfig {
-  public static async sendLogError(log: Log<ErrorObject>): Promise<void> {
+  public static async sendLogError(log: Log<Error>): Promise<void> {
     const now = Date.now();
     const streamName = `${now}-${uuidv4()}`;
 
