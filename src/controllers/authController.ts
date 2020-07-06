@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import authValidator from '../validators/authValidator';
 import authService from '../services/authService';
+import { ResponseSuccess } from '../types/interfaces/apiResponse';
+import SuccessMessages from '../constants/success';
+import HttpStatuses from '../types/enums/HttpStatuses';
+import baseController from './baseController';
+
 
 class AuthController {
   async signUp(req: Request, res: Response, next: NextFunction) {
@@ -10,7 +15,11 @@ class AuthController {
 
       await authService.signUp(signUpBody);
 
-      res.json({ allgood: 'allgodd' });
+      const responseSuccess: ResponseSuccess<undefined> = {
+        statusCode: HttpStatuses.Created,
+        message: SuccessMessages.SignUp,
+      };
+      baseController.handleSuccess(res, responseSuccess);
     } catch (error) {
       next(error);
     }

@@ -18,3 +18,9 @@ export interface ValidationErrorResponse {
   statusCode: HttpStatuses,
   error: ValidationApiMessage
 }
+
+export interface ResponseSuccess<T> {
+  statusCode?: HttpStatuses,
+  payload?: T,
+  message?: ApiMessage
+}
