@@ -20,7 +20,7 @@ export interface ValidationErrorResponse {
 }
 
 export interface ResponseSuccess<T> {
-  statusCode?: HttpStatuses,
+  statusCode?: HttpStatuses.Success | HttpStatuses.Created,
   payload?: T,
   message?: ApiMessage
 }
