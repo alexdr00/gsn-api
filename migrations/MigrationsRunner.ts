@@ -62,8 +62,7 @@ class MigrationsRunner {
       await Migration.run();
     } catch (error) {
       const detail = `Failed to run migration: ${migrationPath}`;
-      const debugParams = { migrationPath };
-      Logger.error(error, detail, debugParams);
+      Logger.error(error, detail);
       process.exit(1);
     }
   }
@@ -79,8 +78,7 @@ class MigrationsRunner {
       await pg.query(query, values, { queryId: 'MarkMigrationAsExecuted' });
     } catch (error) {
       const detail = `Failed to mark migration as executed: ${migrationName}`;
-      const debugParams = { migrationName };
-      Logger.error(error, detail, debugParams);
+      Logger.error(error, detail);
       process.exit(1);
     }
   }
@@ -96,8 +94,7 @@ class MigrationsRunner {
       return executedMigrations.length > 0;
     } catch (error) {
       const detail = `Failed to mark migration as executed: ${migrationName}`;
-      const debugParams = { migrationName };
-      Logger.error(error, detail, debugParams);
+      Logger.error(error, detail);
       return process.exit(1);
     }
   }

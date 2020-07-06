@@ -29,14 +29,13 @@ class Logger {
     Logger.log(log);
   }
 
-  public static error(errorToLog: Error, detail?: string, debugParams?: object): void {
+  public static error(errorToLog: Error, detail?: string, shouldSendToCloudWatch?: boolean): void {
     const err: Log<Error> = {
       level: 'error',
       body: errorToLog,
       detail,
-      debugParams,
     };
-    Logger.logError(err);
+    Logger.logError(err, shouldSendToCloudWatch);
   }
 
   public static success<T>(infoToLog: T): void {
@@ -47,12 +46,15 @@ class Logger {
     Logger.log(log);
   }
 
-  private static logError(errorLog: Log<Error>): void {
+  private static logError(errorLog: Log<Error>, shouldSendToCloudWatch?: boolean): void {
     const colorize = Logger.colorizeByLevel('error');
 
     const infoErrorExtended: LogExtended<Error> = Logger.extendLog(errorLog);
     console.log(colorize(verror.getFullStack(errorLog.body)));
-    this.sendErrorLogToCloudWatch(infoErrorExtended);
+
+    if (shouldSendToCloudWatch) {
+      this.sendErrorLogToCloudWatch(infoErrorExtended);
+    }
   }
 
   private static log<T>(infoToLog: Log<T>): void {
@@ -61,7 +63,6 @@ class Logger {
 
     const infoLogExtended: LogExtended<T> = Logger.extendLog(infoToLog);
     console.log(colorize(infoLogExtended.body));
-    this.sendLogToCloudWatch(infoLogExtended);
   }
 
   private static extendLog<T>(infoToLog: Log<T>): LogExtended<T> {
