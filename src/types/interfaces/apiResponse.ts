@@ -1,13 +1,20 @@
 import HttpStatuses from '../enums/HttpStatuses';
 
 export interface ApiMessage {
-  body: string,
   title?: string,
+  detail: string,
 }
 
 export interface ErrorResponse {
   statusCode: HttpStatuses,
-  error: {
-    messages: ApiMessage[]
-  }
+  error: ApiMessage
+}
+
+export interface ValidationApiMessage {
+  details: string[],
+}
+
+export interface ValidationErrorResponse {
+  statusCode: HttpStatuses,
+  error: ValidationApiMessage
 }

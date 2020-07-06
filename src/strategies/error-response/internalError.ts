@@ -1,16 +1,14 @@
 import ErrorResponseStrategy from './ErrorResponseStrategy';
 import HttpStatuses from '../../types/enums/HttpStatuses';
+import { ErrorResponse } from '../../types/interfaces/apiResponse';
 
 class InternalError implements ErrorResponseStrategy {
-  createErrorResponse() {
+  createErrorResponse(): ErrorResponse {
     return {
       statusCode: HttpStatuses.InternalError,
       error: {
-        messages: [
-          {
-            name: 'Internal Error', body: 'Sorry, internal error, we are working on it',
-          },
-        ],
+        title: 'Internal Error',
+        detail: 'Something went wrong, please try again. Contact support if the issue persists.',
       },
     };
   }

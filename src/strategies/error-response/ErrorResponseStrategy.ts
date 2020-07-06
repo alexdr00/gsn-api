@@ -1,7 +1,7 @@
-import { ErrorResponse } from '../../types/interfaces/apiResponse';
+import { ErrorResponse, ValidationErrorResponse } from '../../types/interfaces/apiResponse';
 
-abstract class ErrorResponseStrategy {
-  abstract createErrorResponse(error: Error): ErrorResponse;
+interface ErrorResponseStrategy {
+  createErrorResponse(error: Error): ErrorResponse | ValidationErrorResponse
 }
 
 export default ErrorResponseStrategy;

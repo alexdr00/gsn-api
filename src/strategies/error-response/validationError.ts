@@ -1,16 +1,13 @@
 import ErrorResponseStrategy from './ErrorResponseStrategy';
 import HttpStatuses from '../../types/enums/HttpStatuses';
+import { ValidationErrorResponse } from '../../types/interfaces/apiResponse';
 
 class ValidationError implements ErrorResponseStrategy {
-  createErrorResponse() {
+  createErrorResponse(): ValidationErrorResponse {
     return {
       statusCode: HttpStatuses.BadRequest,
       error: {
-        messages: [
-          {
-            name: 'Validation Error', body: 'Sorry, validtion internal error',
-          },
-        ],
+        details: ['Generic validation'],
       },
     };
   }
