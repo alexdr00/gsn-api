@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.common.json",
-  "include": ["src/**/*", "index.ts", "__tests__/**/*", "migrations/**/*", "*"],
+  "include": ["src/**/*", "index.ts", "__tests__/**/*", "__mocks__/**/*", "migrations/**/*", "*"],
   "compilerOptions": {
     "baseUrl": "src"
   }
