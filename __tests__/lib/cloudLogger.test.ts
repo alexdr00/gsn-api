@@ -2,8 +2,10 @@ import CloudLogger from 'lib/CloudLogger';
 import { v4 } from 'uuid';
 import { mocked } from 'ts-jest/utils';
 import cloudWatchLogs from 'proxies/aws/cloudWatchLogs';
+import verror from 'proxies/verror';
 
 jest.mock('proxies/aws/cloudWatchLogs');
+jest.mock('proxies/verror');
 jest.mock('uuid');
 
 describe('lib/aws/CloudLogger', () => {
@@ -78,12 +80,12 @@ describe('lib/aws/CloudLogger', () => {
 
     const sendLogError = async () => {
       const {
-        uuid, now, errorLogMessage,
+        uuid, now,
       } = context;
       global.Date.now = jest.fn().mockReturnValue(now);
       mocked(v4).mockReturnValue(uuid);
 
-      await CloudLogger.sendLogError(errorLogMessage);
+      await CloudLogger.sendLogError(context.error);
     };
 
     it('Generates log stream name that should be a uuid plus the current timestamp', async () => {
@@ -95,6 +97,7 @@ describe('lib/aws/CloudLogger', () => {
 
     it('Sends the error stack in a different log event', async () => {
       const { error, stack } = context;
+      mocked(verror.getFullStack).mockReturnValue(stack);
 
       await sendLogError();
       const fnArguments = context.putLogEvents.mock.calls[0];
