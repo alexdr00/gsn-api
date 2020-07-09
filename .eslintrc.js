@@ -24,6 +24,7 @@ module.exports = {
     'no-console': 'off',
     'import/extensions': 'off',
     'class-methods-use-this': 'off',
+    'no-underscore-dangle': 'off',
     'max-len': ["error", 
       { 
         "code": 120,

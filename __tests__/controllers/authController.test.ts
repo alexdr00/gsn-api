@@ -2,6 +2,7 @@ import authService from 'services/authService';
 import authController from 'controllers/authController';
 import httpMock from 'node-mocks-http';
 import HttpStatuses from 'types/enums/HttpStatuses';
+import SuccessMessages from 'constants/success';
 
 jest.mock('services/authService');
 
@@ -18,7 +19,7 @@ describe('Auth Controller', () => {
     mockHttp();
   });
 
-  describe.only('Sign Up', () => {
+  describe('Sign Up', () => {
     beforeEach(() => {
       context.signUpBody = {
         email: 'email@test.com',
@@ -34,6 +35,20 @@ describe('Auth Controller', () => {
 
       expect(authService.signUp).toHaveBeenCalledWith(context.signUpBody);
       expect(context.res.statusCode).toEqual(HttpStatuses.Created);
+
+      expect(context.res._getJSONData().message).toEqual(SuccessMessages.SignUp);
+    });
+
+    it('Returns validation messages when the body is incomplete', async () => {
+      context.req.body = {};
+
+      try {
+        await authController.signUp(context.req, context.res, context.next);
+      } catch (error) {
+        expect(error.name).toBe('ValidationError');
+      }
+
+      expect.hasAssertions();
     });
   });
 });
