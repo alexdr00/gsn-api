@@ -1,14 +1,24 @@
 import fetch from 'node-fetch';
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import BaseAWSConfig from './BaseAWSConfig';
-import { SignUpBody } from '../../types/interfaces/auth';
+import { SignInBody, SignUpBody } from '../../types/interfaces/auth';
 import verror from '../verror';
 
 // @ts-ignore
 global.fetch = fetch;
 
+interface Tokens {
+  idToken: string,
+  refreshToken: string,
+}
+
+interface SessionPayload {
+  session: { [key: string]: any }
+  tokens: Tokens
+}
+
 class Cognito extends BaseAWSConfig {
-  private userPool: AmazonCognitoIdentity.CognitoUserPool;
+  private readonly userPool: AmazonCognitoIdentity.CognitoUserPool;
 
   constructor() {
     super();
@@ -38,6 +48,38 @@ class Cognito extends BaseAWSConfig {
         resolve(result);
       });
     });
+  }
+
+  public signIn(signInBody: SignInBody): Promise<SessionPayload> {
+    const { email, password } = signInBody;
+
+    const authenticationData = { Username: email, Password: password };
+    const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
+      authenticationData,
+    );
+    const userData = { Username: email, Pool: this.userPool };
+    const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+
+    return new Promise((resolve, reject) => {
+      cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: (cognitoSession) => {
+          const sessionPayload = this.getCognitoSessionPayload(cognitoSession);
+          resolve(sessionPayload);
+        },
+        onFailure: (error) => {
+          reject(verror.createError(error));
+        },
+      });
+    });
+  }
+
+  private getCognitoSessionPayload(cognitoSession: AmazonCognitoIdentity.CognitoUserSession): SessionPayload {
+    const idToken = cognitoSession.getIdToken().getJwtToken();
+    const { payload: session } = cognitoSession.getIdToken();
+    const refreshToken = cognitoSession.getRefreshToken().getToken();
+    const tokens = { refreshToken, idToken };
+
+    return { session, tokens };
   }
 }
 

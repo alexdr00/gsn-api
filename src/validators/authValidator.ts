@@ -1,5 +1,5 @@
 import Joi from '../proxies/joi';
-import { SignUpBody } from '../types/interfaces/auth';
+import { SignUpBody, SignInBody } from '../types/interfaces/auth';
 
 const commonSchema = {
   email: Joi.string()
@@ -25,9 +25,24 @@ const signUpSchema = Joi.object({
     .required(),
 });
 
+const signInSchema = Joi.object({
+  ...commonSchema,
+  password: Joi.string().required(),
+});
+
 class AuthValidator {
   public signUp(signUpBody: SignUpBody) {
     const validation = signUpSchema.validate(signUpBody);
+
+    if (validation.error) {
+      throw validation.error;
+    }
+
+    return validation.value;
+  }
+
+  public signIn(signInBody: SignInBody) {
+    const validation = signInSchema.validate(signInBody);
 
     if (validation.error) {
       throw validation.error;

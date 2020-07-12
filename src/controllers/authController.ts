@@ -24,6 +24,17 @@ class AuthController {
       next(error);
     }
   }
+
+  async signIn(req: Request, res: Response, next: NextFunction) {
+    try {
+      authValidator.signIn(req.body);
+      const signInBody = req.body;
+
+      const cognitoSession = await authService.signIn(signInBody);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new AuthController();

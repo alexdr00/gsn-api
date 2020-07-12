@@ -11,6 +11,7 @@ class AuthRouter {
 
   private mountRoutes() {
     this.router.post('/sign-up', authController.signUp);
+    this.router.post('/sign-in', authController.signIn);
   }
 }
 
