@@ -19,18 +19,6 @@ class Redis {
       Logger.error(verror.createError(error));
     });
   }
-
-  public get(key: string) {
-    return new Promise((resolve, reject) => {
-      this.client.get(key, (err: Error, reply: string) => {
-        if (err) {
-          reject(err);
-        }
-
-        resolve(reply);
-      });
-    });
-  }
 }
 
 export default new Redis();

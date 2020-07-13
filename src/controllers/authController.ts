@@ -5,6 +5,7 @@ import { ResponseSuccess } from '../types/interfaces/apiResponse';
 import SuccessMessages from '../constants/success';
 import HttpStatuses from '../types/enums/HttpStatuses';
 import baseController from './baseController';
+import { Tokens } from '../types/interfaces/session';
 
 
 class AuthController {
@@ -31,6 +32,11 @@ class AuthController {
       const signInBody = req.body;
 
       const cognitoSession = await authService.signIn(signInBody);
+      const responseSuccess: ResponseSuccess<Tokens> = {
+        message: SuccessMessages.SignIn,
+        payload: cognitoSession,
+      };
+      baseController.handleSuccess(res, responseSuccess);
     } catch (error) {
       next(error);
     }

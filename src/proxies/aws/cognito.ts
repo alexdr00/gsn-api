@@ -3,19 +3,10 @@ import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import BaseAWSConfig from './BaseAWSConfig';
 import { SignInBody, SignUpBody } from '../../types/interfaces/auth';
 import verror from '../verror';
+import { SessionPayload, Session } from '../../types/interfaces/session';
 
 // @ts-ignore
 global.fetch = fetch;
-
-interface Tokens {
-  idToken: string,
-  refreshToken: string,
-}
-
-interface SessionPayload {
-  session: { [key: string]: any }
-  tokens: Tokens
-}
 
 class Cognito extends BaseAWSConfig {
   private readonly userPool: AmazonCognitoIdentity.CognitoUserPool;
@@ -75,7 +66,8 @@ class Cognito extends BaseAWSConfig {
 
   private getCognitoSessionPayload(cognitoSession: AmazonCognitoIdentity.CognitoUserSession): SessionPayload {
     const idToken = cognitoSession.getIdToken().getJwtToken();
-    const { payload: session } = cognitoSession.getIdToken();
+    const { payload } = cognitoSession.getIdToken();
+    const session = payload as Session;
     const refreshToken = cognitoSession.getRefreshToken().getToken();
     const tokens = { refreshToken, idToken };
 

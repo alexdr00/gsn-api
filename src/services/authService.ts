@@ -3,7 +3,8 @@ import cognito from '../proxies/aws/cognito';
 import verror from '../proxies/verror';
 import userRepo from '../repositories/userRepo';
 import ServiceErrors from '../constants/errors/services';
-import redis from '../proxies/redis';
+import SessionManager from '../lib/SessionManager';
+import { Tokens } from '../types/interfaces/session';
 
 class AuthService {
   public async signUp(signUpBody: SignUpBody) {
@@ -22,11 +23,13 @@ class AuthService {
     }
   }
 
-  public async signIn(signInBody: SignInBody) {
+  public async signIn(signInBody: SignInBody): Promise<Tokens> {
     const { email } = signInBody;
 
     try {
       const cognitoSession = await cognito.signIn(signInBody);
+      await SessionManager.set(cognitoSession.session);
+      return cognitoSession.tokens;
     } catch (error) {
       throw verror.createError({
         name: ServiceErrors.SignIn.name,
