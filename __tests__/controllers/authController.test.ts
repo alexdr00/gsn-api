@@ -51,4 +51,35 @@ describe('Auth Controller', () => {
       expect.hasAssertions();
     });
   });
+
+  describe('Sign In', () => {
+    beforeEach(() => {
+      context.signInBody = {
+        email: 'email@test.com',
+        password: 'Test password1',
+      };
+    });
+
+    it('Returns a successful response when everything goes right', async () => {
+      context.req.body = context.signInBody;
+
+      await authController.signIn(context.req, context.res, context.next);
+      expect(authService.signIn).toHaveBeenCalledWith(context.signInBody);
+      expect(context.res.statusCode).toEqual(HttpStatuses.Success);
+
+      expect(context.res._getJSONData().message).toEqual(SuccessMessages.SignIn);
+    });
+
+    it('Returns validation messages when the body is incomplete', async () => {
+      context.req.body = {};
+
+      try {
+        await authController.signIn(context.req, context.res, context.next);
+      } catch (error) {
+        expect(error.name).toBe('ValidationError');
+      }
+
+      expect.hasAssertions();
+    });
+  });
 });
