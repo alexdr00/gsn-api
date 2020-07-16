@@ -7,6 +7,10 @@ const SuccessMessages = {
     title: 'User Signed In',
     detail: 'The used was successfully signed in.',
   },
+  CheckIsAuthenticated: {
+    title: 'User is authenticated',
+    detail: 'The user is correctly authenticated in the app.',
+  },
 };
 
 export default SuccessMessages;

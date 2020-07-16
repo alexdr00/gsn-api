@@ -10,6 +10,9 @@ class ErrorResponse {
       ValidationError: error.isJoi ? joiValidationError : validationError,
       UsernameExistsException: unprocessableEntityError,
       NotAuthorizedException: notAuthorized,
+      Unauthorized: notAuthorized,
+      TokenExpiredError: notAuthorized,
+      JsonWebTokenError: notAuthorized,
     };
 
     const defaultErrorType = internalError;

@@ -9,7 +9,7 @@ import { Tokens } from '../types/interfaces/session';
 
 
 class AuthController {
-  async signUp(req: Request, res: Response, next: NextFunction) {
+  async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       authValidator.signUp(req.body);
       const signUpBody = req.body;
@@ -26,7 +26,7 @@ class AuthController {
     }
   }
 
-  async signIn(req: Request, res: Response, next: NextFunction) {
+  async signIn(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       authValidator.signIn(req.body);
       const signInBody = req.body;
@@ -35,6 +35,21 @@ class AuthController {
       const responseSuccess: ResponseSuccess<Tokens> = {
         message: SuccessMessages.SignIn,
         payload: cognitoSession,
+      };
+      baseController.handleSuccess(res, responseSuccess);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async checkIsAuthenticated(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { authorization: bearerToken } = req.headers;
+      await authService.getUserSessionFromBearerToken(bearerToken);
+
+      const responseSuccess: ResponseSuccess<boolean> = {
+        message: SuccessMessages.CheckIsAuthenticated,
+        payload: true,
       };
       baseController.handleSuccess(res, responseSuccess);
     } catch (error) {

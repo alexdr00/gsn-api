@@ -4,7 +4,10 @@ import verror from '../proxies/verror';
 import userRepo from '../repositories/userRepo';
 import ServiceErrors from '../constants/errors/services';
 import SessionManager from '../lib/SessionManager';
-import { Tokens } from '../types/interfaces/session';
+import { Session, Tokens } from '../types/interfaces/session';
+import checkBearerTokenIsValid from '../steps/checkBearerTokenIsValid';
+import decodeBearerToken from '../steps/decodeBearerToken';
+import throwSessionExpiredError from '../steps/throwSessionExpiredError';
 
 class AuthService {
   public async signUp(signUpBody: SignUpBody) {
@@ -36,6 +39,28 @@ class AuthService {
         message: ServiceErrors.SignIn.message,
         cause: error,
         debugParams: { email },
+      });
+    }
+  }
+
+  public async getUserSessionFromBearerToken(bearerToken: string | undefined, originEndpoint = ''): Promise<Session> {
+    try {
+      checkBearerTokenIsValid(bearerToken);
+      const isRefreshTokenEndpoint = originEndpoint.includes('/auth/refresh-token');
+
+      const bearerTokenDecoded = await decodeBearerToken(bearerToken!, { ignoreExpiration: isRefreshTokenEndpoint });
+      const redisSession = await SessionManager.get(bearerTokenDecoded.email);
+      if (redisSession === null) {
+        throwSessionExpiredError(originEndpoint);
+      }
+
+      return redisSession;
+    } catch (error) {
+      throw verror.createError({
+        name: ServiceErrors.GetUserSessionFromBearerToken.name,
+        message: ServiceErrors.GetUserSessionFromBearerToken.message,
+        cause: error,
+        debugParams: { originEndpoint },
       });
     }
   }
