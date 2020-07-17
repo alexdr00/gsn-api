@@ -43,6 +43,35 @@ class AuthService {
     }
   }
 
+  public async refreshIdToken(refreshToken: string, email: string): Promise<Tokens> {
+    try {
+      const { tokens, session } = await cognito.refreshIdToken(refreshToken, email);
+      await SessionManager.set(session);
+      return tokens;
+    } catch (error) {
+      throw verror.createError({
+        name: ServiceErrors.RefreshIdToken.name,
+        message: ServiceErrors.RefreshIdToken.message,
+        cause: error,
+        debugParams: { email },
+      });
+    }
+  }
+
+  public async signOut(email: string): Promise<void> {
+    try {
+      cognito.signOut(email);
+      await SessionManager.revoke(email);
+    } catch (error) {
+      throw verror.createError({
+        name: ServiceErrors.SignOut.name,
+        message: ServiceErrors.SignOut.message,
+        cause: error,
+        debugParams: { email },
+      });
+    }
+  }
+
   public async getUserSessionFromBearerToken(bearerToken: string | undefined, originEndpoint = ''): Promise<Session> {
     try {
       checkBearerTokenIsValid(bearerToken);

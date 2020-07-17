@@ -10,3 +10,7 @@ export interface SignUpBody extends AuthCommon {
 export interface SignInBody extends AuthCommon {
   password: string,
 }
+
+export interface RefreshTokenBody {
+  refreshToken: string,
+}

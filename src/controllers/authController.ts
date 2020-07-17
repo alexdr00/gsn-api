@@ -7,7 +7,6 @@ import HttpStatuses from '../types/enums/HttpStatuses';
 import baseController from './baseController';
 import { Tokens } from '../types/interfaces/session';
 
-
 class AuthController {
   async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -50,6 +49,38 @@ class AuthController {
       const responseSuccess: ResponseSuccess<boolean> = {
         message: SuccessMessages.CheckIsAuthenticated,
         payload: true,
+      };
+      baseController.handleSuccess(res, responseSuccess);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async refreshIdToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      authValidator.refreshIdToken(req.body);
+      const { email } = req.user!;
+      const { refreshToken } = req.body;
+
+      const tokens = await authService.refreshIdToken(refreshToken, email);
+
+      const responseSuccess: ResponseSuccess<Tokens> = {
+        message: SuccessMessages.RefreshIdToken,
+        payload: tokens,
+      };
+      baseController.handleSuccess(res, responseSuccess);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async signOut(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { email } = req.user!;
+      await authService.signOut(email);
+
+      const responseSuccess: ResponseSuccess<undefined> = {
+        message: SuccessMessages.SignOut,
       };
       baseController.handleSuccess(res, responseSuccess);
     } catch (error) {

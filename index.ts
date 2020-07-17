@@ -1,5 +1,6 @@
 /* eslint-disable import/first */
 import dotenv from 'dotenv';
+import './src/types/augmentations';
 
 dotenv.config();
 

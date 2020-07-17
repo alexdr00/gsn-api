@@ -15,8 +15,6 @@ class Cognito extends BaseAWSConfig {
     super();
     const userPoolId = process.env.COGNITO_USER_POOL_ID || '';
     const appClientId = process.env.COGNITO_APP_CLIENT_ID || '';
-    // const identityPoolId = process.env.COGNITO_IDENTITY_POOL_ID;
-    // const awsRegion = this.baseAWSConfig.region;
     const poolData = { UserPoolId: userPoolId, ClientId: appClientId };
     const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
@@ -62,6 +60,29 @@ class Cognito extends BaseAWSConfig {
         },
       });
     });
+  }
+
+  public refreshIdToken(refreshToken: string, email:string): Promise<SessionPayload> {
+    const userData = { Username: email, Pool: this.userPool };
+    const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+    const RefreshToken = new AmazonCognitoIdentity.CognitoRefreshToken({ RefreshToken: refreshToken });
+
+    return new Promise((resolve, reject) => {
+      cognitoUser.refreshSession(RefreshToken, (err, result) => {
+        if (err) {
+          console.log({ err });
+          reject(verror.createError(err));
+        }
+
+        resolve(this.getCognitoSessionPayload(result));
+      });
+    });
+  }
+
+  public signOut(email:string): void {
+    const userData = { Username: email, Pool: this.userPool };
+    const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+    return cognitoUser.signOut();
   }
 
   private getCognitoSessionPayload(cognitoSession: AmazonCognitoIdentity.CognitoUserSession): SessionPayload {

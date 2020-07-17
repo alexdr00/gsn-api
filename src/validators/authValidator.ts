@@ -1,5 +1,5 @@
 import Joi from '../proxies/joi';
-import { SignUpBody, SignInBody } from '../types/interfaces/auth';
+import { SignUpBody, SignInBody, RefreshTokenBody } from '../types/interfaces/auth';
 
 const commonSchema = {
   email: Joi.string()
@@ -30,6 +30,10 @@ const signInSchema = Joi.object({
   password: Joi.string().required(),
 });
 
+const refreshTokenSchema = Joi.object({
+  refreshToken: Joi.string().required(),
+});
+
 class AuthValidator {
   public signUp(signUpBody: SignUpBody) {
     const validation = signUpSchema.validate(signUpBody);
@@ -43,6 +47,16 @@ class AuthValidator {
 
   public signIn(signInBody: SignInBody) {
     const validation = signInSchema.validate(signInBody);
+
+    if (validation.error) {
+      throw validation.error;
+    }
+
+    return validation.value;
+  }
+
+  public refreshIdToken(refreshTokenBody: RefreshTokenBody) {
+    const validation = refreshTokenSchema.validate(refreshTokenBody);
 
     if (validation.error) {
       throw validation.error;

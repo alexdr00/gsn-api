@@ -11,6 +11,14 @@ const SuccessMessages = {
     title: 'User is authenticated',
     detail: 'The user is correctly authenticated in the app.',
   },
+  RefreshIdToken: {
+    title: 'The token has been refreshed',
+    detail: 'Token refreshed correctly',
+  },
+  SignOut: {
+    title: 'Signed out',
+    detail: 'You signed out correctly',
+  },
 };
 
 export default SuccessMessages;

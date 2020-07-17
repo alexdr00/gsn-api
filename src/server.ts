@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import authRouter from './routers/authRouter';
 import errorHander from './middleware/errorHander';
+import requireAuth from './middleware/requireAuth';
 
 class Server {
   public app: express.Application;
@@ -22,6 +23,7 @@ class Server {
     this.app.use(bodyParser.urlencoded({ extended: false }));
     this.app.use(bodyParser.json());
     this.app.use(morgan('dev'));
+    this.app.use(requireAuth);
   }
 
   private useErrorHandlingMiddleware() {
