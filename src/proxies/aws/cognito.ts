@@ -4,6 +4,7 @@ import BaseAWSConfig from './BaseAWSConfig';
 import { SignInBody, SignUpBody } from '../../types/interfaces/auth';
 import verror from '../verror';
 import { SessionPayload, Session } from '../../types/interfaces/session';
+import ResponseErrors from '../../constants/errors/responses';
 
 // @ts-ignore
 global.fetch = fetch;
@@ -70,8 +71,11 @@ class Cognito extends BaseAWSConfig {
     return new Promise((resolve, reject) => {
       cognitoUser.refreshSession(RefreshToken, (err, result) => {
         if (err) {
-          console.log({ err });
-          reject(verror.createError(err));
+          const error = { ...err };
+          if (error.message === 'Refresh Token has expired') {
+            error.name = ResponseErrors.SessionExpired.name;
+          }
+          reject(verror.createError(error));
         }
 
         resolve(this.getCognitoSessionPayload(result));

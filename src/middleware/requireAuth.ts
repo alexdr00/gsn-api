@@ -7,7 +7,7 @@ const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
   const unprotectedEndpoints = [
     '/auth/sign-in',
     '/auth/sign-up',
-    // '/health',
+    '/health',
   ];
 
   const isUnprotectedEndpoint = unprotectedEndpoints.find((unprotectedEndpoint) => (

@@ -3,6 +3,7 @@ import internalError from './internalError';
 import validationError from './validationError';
 import unprocessableEntityError from './unprocessableEntityError';
 import notAuthorized from './notAuthorized';
+import sessionExpiredError from './sessionExpiredError';
 
 class ErrorResponse {
   public static createErrorResponse(error: any) {
@@ -13,6 +14,7 @@ class ErrorResponse {
       Unauthorized: notAuthorized,
       TokenExpiredError: notAuthorized,
       JsonWebTokenError: notAuthorized,
+      SessionExpired: sessionExpiredError,
     };
 
     const defaultErrorType = internalError;

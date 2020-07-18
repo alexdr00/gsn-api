@@ -2,6 +2,7 @@ import HttpStatuses from '../enums/HttpStatuses';
 
 export interface ApiMessage {
   title?: string,
+  code?: string,
   detail: string,
 }
 

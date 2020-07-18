@@ -1,6 +1,6 @@
 const ResponseErrors = {
   InternalError: {
-    name: 'Internal Error',
+    name: 'InternalError',
     message: 'Something went wrong, please try again. Contact support if the issue persists.',
   },
   InvalidBearerToken: {
@@ -12,7 +12,7 @@ const ResponseErrors = {
     message: 'You are already signed out',
   },
   SessionExpired: {
-    name: 'Unauthorized',
+    name: 'SessionExpired',
     message: 'Your session has expired',
   },
 };

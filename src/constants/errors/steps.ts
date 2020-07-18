@@ -9,7 +9,7 @@ const StepErrors = {
   },
   ThrowSessionExpiredError: {
     name: 'ThrowSessionExpiredError',
-    message: 'Failed to throw session expired error',
+    message: 'Expected throw of Session Expired error',
   },
 };
 
