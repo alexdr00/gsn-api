@@ -16,7 +16,7 @@ class SessionManager {
     });
   }
 
-  public static async get(email: string): Promise<Session> {
+  public static async get(email: string): Promise<Session | null> {
     return new Promise((resolve, reject) => {
       redis.client.get(email, (err: Error, sessionString: string) => {
         if (err) {

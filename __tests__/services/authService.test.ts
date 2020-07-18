@@ -4,11 +4,17 @@ import cognito from 'proxies/aws/cognito';
 import { mocked } from 'ts-jest/utils';
 import ServiceErrors from 'constants/errors/services';
 import SessionManager from 'lib/SessionManager';
+import checkBearerTokenIsValid from 'steps/checkBearerTokenIsValid';
+import decodeBearerToken from 'steps/decodeBearerToken';
+import throwSessionExpiredError from 'steps/throwSessionExpiredError';
 import mockSession from '../reusableMocks/mockSession';
 
 jest.mock('proxies/aws/cognito');
 jest.mock('repositories/userRepo');
 jest.mock('lib/SessionManager');
+jest.mock('steps/checkBearerTokenIsValid');
+jest.mock('steps/decodeBearerToken');
+jest.mock('steps/throwSessionExpiredError');
 
 describe('Auth Service', () => {
   const context: Record<string, any> = {};
@@ -45,6 +51,8 @@ describe('Auth Service', () => {
         expect(error.name).toBe(ServiceErrors.SignUp.name);
         expect(error.message).toBe(ServiceErrors.SignUp.message);
       }
+
+      expect.hasAssertions();
     });
   });
 
@@ -78,6 +86,136 @@ describe('Auth Service', () => {
       const signInResult = await authService.signIn(context.signInBody);
 
       expect(signInResult).toBe(context.tokens);
+    });
+
+    it('Throws a descriptive error when it fails', async () => {
+      const testError = new Error('Test error here!');
+      mocked(cognito.signIn).mockImplementation(() => { throw testError; });
+
+      try {
+        await authService.signIn(context.signInBody);
+      } catch (error) {
+        expect(error.name).toBe(ServiceErrors.SignIn.name);
+        expect(error.message).toBe(ServiceErrors.SignIn.message);
+      }
+
+      expect.hasAssertions();
+    });
+  });
+
+  describe('Refresh id token', () => {
+    beforeEach(() => {
+      context.refreshToken = 'mock.refresh.token';
+      context.email = 'test@email.com';
+    });
+
+    it('Calls cognito to refresh the id token, then uses its result to set a session with redis and return the auth tokens', async () => {
+      const session = mockSession;
+      const tokens = { idToken: 'id-token', refreshToken: 'refresh-token' };
+      mocked(cognito.refreshIdToken).mockResolvedValue({ tokens, session });
+
+      const result = await authService.refreshIdToken(context.refreshToken, context.email);
+      expect(cognito.refreshIdToken).toHaveBeenCalledWith(context.refreshToken, context.email);
+      expect(SessionManager.set).toHaveBeenCalledWith(session);
+      expect(result).toEqual(tokens);
+    });
+
+    it('Throws a descriptive error when it fails', async () => {
+      const testError = new Error('Test error here!');
+      mocked(cognito.refreshIdToken).mockImplementation(() => { throw testError; });
+
+      try {
+        await authService.refreshIdToken(context.refreshToken, context.email);
+      } catch (error) {
+        expect(error.name).toBe(ServiceErrors.RefreshIdToken.name);
+        expect(error.message).toBe(ServiceErrors.RefreshIdToken.message);
+      }
+
+      expect.hasAssertions();
+    });
+  });
+
+  describe('Sign out', () => {
+    beforeEach(() => {
+      context.email = 'test@email.com';
+    });
+
+    it('Calls cognito to sign the user out, then revokes the session with redis', async () => {
+      await authService.signOut(context.email);
+      expect(cognito.signOut).toHaveBeenCalledWith(context.email);
+      expect(SessionManager.revoke).toHaveBeenCalledWith(context.email);
+    });
+
+    it('Throws a descriptive error when it fails', async () => {
+      const testError = new Error('Test error here!');
+      mocked(cognito.signOut).mockImplementation(() => { throw testError; });
+
+      try {
+        await authService.signOut(context.email);
+      } catch (error) {
+        expect(error.name).toBe(ServiceErrors.SignOut.name);
+        expect(error.message).toBe(ServiceErrors.SignOut.message);
+      }
+
+      expect.hasAssertions();
+    });
+  });
+
+  describe('Get user session from bearer token', () => {
+    beforeEach(() => {
+      context.bearerToken = 'mock.bearer.token';
+      context.originEndpoint = '';
+      context.bearerTokenDecoded = mockSession;
+      mocked(decodeBearerToken).mockResolvedValue(context.bearerTokenDecoded);
+    });
+
+    it('Calls a step to validate the bearer token', async () => {
+      await authService.getUserSessionFromBearerToken(context.bearerToken);
+      expect(checkBearerTokenIsValid).toHaveBeenCalledWith(context.bearerToken);
+    });
+
+    it('Calls a step to decode the bearer token', async () => {
+      await authService.getUserSessionFromBearerToken(context.bearerToken);
+      expect(decodeBearerToken).toHaveBeenCalledWith(context.bearerToken, { ignoreExpiration: false });
+    });
+
+    it('Ignores token expiration if the origin endpoint is refresh token', async () => {
+      const refreshTokenEndpoint = 'v1/auth/refresh-token';
+      await authService.getUserSessionFromBearerToken(context.bearerToken, refreshTokenEndpoint);
+      expect(decodeBearerToken).toHaveBeenCalledWith(context.bearerToken, { ignoreExpiration: true });
+    });
+
+    it('Gets the redis session from the decoded bearer token email', async () => {
+      const email = 'test@test.com';
+      context.bearerTokenDecoded.email = email;
+      await authService.getUserSessionFromBearerToken(context.bearerToken);
+      expect(SessionManager.get).toHaveBeenCalledWith(email);
+    });
+
+    it('Returns the redis session if it is not null', async () => {
+      mocked(SessionManager.get).mockResolvedValue(context.bearerTokenDecoded);
+      const result = await authService.getUserSessionFromBearerToken(context.bearerToken);
+      expect(result).toBe(context.bearerTokenDecoded);
+    });
+
+    it('Calls a step to throw a session expired error if redis does not find any session', async () => {
+      mocked(SessionManager.get).mockResolvedValue(null);
+      await authService.getUserSessionFromBearerToken(context.bearerToken, context.originEndpoint);
+      expect(throwSessionExpiredError).toHaveBeenCalledWith(context.originEndpoint);
+    });
+
+    it('Throws a descriptive error when it fails', async () => {
+      const testError = new Error('Test error here!');
+      mocked(SessionManager.get).mockImplementation(() => { throw testError; });
+
+      try {
+        await authService.getUserSessionFromBearerToken(context.bearerToken);
+      } catch (error) {
+        expect(error.name).toBe(ServiceErrors.GetUserSessionFromBearerToken.name);
+        expect(error.message).toBe(ServiceErrors.GetUserSessionFromBearerToken.message);
+      }
+
+      expect.hasAssertions();
     });
   });
 });
