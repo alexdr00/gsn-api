@@ -30,10 +30,10 @@ class AuthController {
       authValidator.signIn(req.body);
       const signInBody = req.body;
 
-      const cognitoSession = await authService.signIn(signInBody);
+      const tokens = await authService.signIn(signInBody);
       const responseSuccess: ResponseSuccess<Tokens> = {
         message: SuccessMessages.SignIn,
-        payload: cognitoSession,
+        payload: tokens,
       };
       baseController.handleSuccess(res, responseSuccess);
     } catch (error) {
