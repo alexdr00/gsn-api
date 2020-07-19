@@ -25,6 +25,8 @@ module.exports = {
     'import/extensions': 'off',
     'class-methods-use-this': 'off',
     'no-underscore-dangle': 'off',
+    'consistent-return': 'off',
+    '@typescript-eslint/no-throw-literal': 'off',
     'max-len': ["error", 
       { 
         "code": 120,

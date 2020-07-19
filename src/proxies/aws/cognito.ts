@@ -32,7 +32,7 @@ class Cognito extends BaseAWSConfig {
     return new Promise((resolve, reject) => {
       this.userPool.signUp(email, password, attributeList, [], (err, result) => {
         if (err) {
-          reject(verror.createError(err));
+          return reject(verror.createError(err));
         }
 
         resolve(result);
@@ -56,9 +56,7 @@ class Cognito extends BaseAWSConfig {
           const sessionPayload = this.getCognitoSessionPayload(cognitoSession);
           resolve(sessionPayload);
         },
-        onFailure: (error) => {
-          reject(verror.createError(error));
-        },
+        onFailure: (error) => reject(verror.createError(error)),
       });
     });
   }
@@ -75,7 +73,7 @@ class Cognito extends BaseAWSConfig {
           if (error.message === 'Refresh Token has expired') {
             error.name = ResponseErrors.SessionExpired.name;
           }
-          reject(verror.createError(error));
+          return reject(verror.createError(error));
         }
 
         resolve(this.getCognitoSessionPayload(result));

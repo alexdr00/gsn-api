@@ -8,7 +8,7 @@ class SessionManager {
     return new Promise((resolve, reject) => {
       redis.client.set(sessionKey, sessionString, (err: Error) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
 
         resolve();
@@ -20,7 +20,7 @@ class SessionManager {
     return new Promise((resolve, reject) => {
       redis.client.get(email, (err: Error, sessionString: string) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
 
         const sessionParsed = JSON.parse(sessionString);
@@ -33,7 +33,7 @@ class SessionManager {
     return new Promise((resolve, reject) => {
       redis.client.del(email, (err: Error) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
 
         resolve();

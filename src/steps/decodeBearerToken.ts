@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import axios from 'axios';
 import jwkToPem from 'jwk-to-pem';
 import jwt, { VerifyOptions } from 'jsonwebtoken';
 import verror from '../proxies/verror';
@@ -9,21 +9,22 @@ async function decodeBearerToken(bearerToken: string, options: VerifyOptions = {
   try {
     const idToken = bearerToken.slice(7, bearerToken.length);
     const jwksUrl = process.env.JWKS_URL as string;
-    const jwksResponse = await fetch(jwksUrl);
-    const jwks = await jwksResponse.json();
+    const { data: jwks } = await axios.get(jwksUrl);
     const jwkForIdToken = jwks.keys[0];
     const jwkPem = jwkToPem(jwkForIdToken);
     const verifyOptions: VerifyOptions = { algorithms: ['RS256'], ...options };
 
-    return new Promise((resolve) => {
+    const decodedTokenPromise = new Promise<Session>((resolve, reject) => {
       jwt.verify(idToken, jwkPem, verifyOptions, (error, decodedToken) => {
         if (error) {
-          throw error;
+          return reject(error);
         }
 
         resolve(decodedToken as Session);
       });
     });
+
+    return await decodedTokenPromise;
   } catch (error) {
     throw verror.createError({
       name: StepErrors.DecodeBearerToken.name,

@@ -25,10 +25,10 @@ class CloudWatchLogs extends BaseAWSConfig {
     return new Promise((resolve, reject) => {
       this.cloudWatchLogs.createLogStream(params, (err, data) => {
         if (err) {
-          reject(verror.createError(err));
-        } else {
-          resolve(data);
+          return reject(verror.createError(err));
         }
+
+        resolve(data);
       });
     });
   }
