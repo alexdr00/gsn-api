@@ -1,11 +1,12 @@
 import MigrationsRunner from '../MigrationsRunner';
 
-const migrationType = 'trigger';
+const migrationType = 'seed';
 
 // NOTE: the these strings should match exactly the filename
 // NOTE 2: The order matters, the first migrations in the array will be executed first
 const migrationFileNames = [
-  'set-updated-at-to-current-timestamp',
+  'country',
+  'set-default-country-to-user',
 ];
 
 const migrationRunnerConfig = {

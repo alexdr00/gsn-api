@@ -10,9 +10,16 @@
     "tsc": "tsc -p tsconfig.prod.json",
     "start": "npm run tsc && node ./dist/index.js",
     "dev": "ts-node-dev --project tsconfig.dev.json --respawn --type-check ./index.ts",
+    
     "migrate:schema": "npm run ts-node migrations/runners/schema.ts",
+    "migrate:seed": "npm run ts-node migrations/runners/seed.ts",
     "migrate:trigger": "npm run ts-node migrations/runners/trigger.ts",
-    "migrate:all": "npm-run-all -s migrate:trigger migrate:schema"
+    "migrate:all": "npm-run-all -s migrate:trigger migrate:schema migrate:seed",
+    
+    "container-migrate:schema": "docker exec -it gsn-api npm run migrate:schema",
+    "container-migrate:seed": "docker exec -it gsn-api npm run migrate:seed",
+    "container-migrate:trigger": "docker exec -it gsn-api npm run migrate:trigger",
+    "container-migrate:all": "docker exec -it gsn-api npm run migrate:all"
   },
   "repository": {
     "type": "git",

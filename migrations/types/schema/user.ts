@@ -7,8 +7,16 @@ class UserSchema {
         id SERIAL PRIMARY KEY,
         email VARCHAR(255) NOT NULL UNIQUE,
         name VARCHAR(255) NOT NULL,
+        preferred_max_game_cost BIGINT,
+        country_id INT,
+        has_notifications_turned_on BOOLEAN DEFAULT FALSE, 
         created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        
+        CONSTRAINT fk_country
+          FOREIGN KEY (country_id)
+          REFERENCES country(id)
+          ON DELETE SET DEFAULT                   
       );
     `;
 

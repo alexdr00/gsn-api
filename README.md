@@ -10,7 +10,7 @@ This script will run all migration scripts in this order:
     
     Note: Make sure the container is running while executing the migrations.
     
-    > docker exec -it gsn-api npm run migrate:all
+    > npm run container-migrate:all
 
 3. Start dev server along all its dependencies (postgres, redis, etc...)
     > docker-compose up
