@@ -1,4 +1,8 @@
 const SuccessMessages = {
+  ChangeUserPreferences: {
+    title: 'Preferences Changed',
+    detail: 'Your preferences were changed successfully.',
+  },
   SignUp: {
     title: 'User Created',
     detail: 'The user was registered successfully. You can now log in.',

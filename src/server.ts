@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import authRouter from './routers/authRouter';
 import errorHander from './middleware/errorHander';
 import requireAuth from './middleware/requireAuth';
+import userPreferencesRouter from './routers/userPreferencesRouter';
 
 class Server {
   public app: express.Application;
@@ -34,6 +35,7 @@ class Server {
     const router = express.Router();
     router.use('/health', (req, res) => res.send({ message: 'ok' }));
     router.use('/auth', authRouter);
+    router.use('/user-preferences', userPreferencesRouter);
 
     this.app.use('/v1', router);
   }

@@ -19,6 +19,10 @@ const ServiceErrors = {
     name: 'SignOut',
     message: 'Failed to sign the user out',
   },
+  ChangeUserPreferences: {
+    name: 'ChangeUserPreferences',
+    message: 'Failed change the user preferences',
+  },
 };
 
 export default ServiceErrors;
