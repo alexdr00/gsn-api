@@ -11,6 +11,7 @@ const mockSession = {
   exp: 0,
   iat: 0,
   email: '',
+  user_id: 0,
 };
 
 export default mockSession;
