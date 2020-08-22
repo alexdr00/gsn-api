@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import authRouter from './routers/authRouter';
 import errorHander from './middleware/errorHander';
 import requireAuth from './middleware/requireAuth';
-import userPreferencesRouter from './routers/userPreferencesRouter';
+import userPreferencesRouter from './routers/userRouter';
 
 class Server {
   public app: express.Application;

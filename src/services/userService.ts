@@ -1,19 +1,20 @@
 import verror from '../proxies/verror';
 import ServiceErrors from '../constants/errors/services';
-import { UserPreferencesBody } from '../types/interfaces/userPreferences';
+import userRepo from '../repositories/userRepo';
+import { UserPreferences } from '../types/interfaces/user';
 
-class UserPreferencesService {
-  public async changeUserPreferences(userPreferencesBody: UserPreferencesBody) {
-    const {
-      preferredMaxGameCost,
-      countryId,
-      preferredPlatformId,
-      hasNotificationsTurnedOn,
-    } = userPreferencesBody;
-
+class UserService {
+  public async changeUserPreferences(userId: number, userPreferences: UserPreferences) {
     try {
-      console.log(userPreferencesBody);
+      await userRepo.changeUserPreferences(userId, userPreferences);
     } catch (error) {
+      const {
+        preferredMaxGameCost,
+        countryId,
+        preferredPlatformId,
+        hasNotificationsTurnedOn,
+      } = userPreferences;
+
       throw verror.createError({
         name: ServiceErrors.ChangeUserPreferences.name,
         message: ServiceErrors.ChangeUserPreferences.message,
@@ -29,4 +30,4 @@ class UserPreferencesService {
   }
 }
 
-export default new UserPreferencesService();
+export default new UserService();

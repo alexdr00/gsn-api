@@ -15,7 +15,8 @@ export interface Session {
   'cognito:username': string,
   exp: number,
   iat: number,
-  email: string
+  email: string,
+  user_id: number,
 }
 
 export interface SessionPayload {

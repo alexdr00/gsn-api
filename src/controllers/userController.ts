@@ -3,16 +3,17 @@ import { ResponseSuccess } from '../types/interfaces/apiResponse';
 import SuccessMessages from '../constants/success';
 import HttpStatuses from '../types/enums/HttpStatuses';
 import baseController from './baseController';
-import userPreferencesValidator from '../validators/userPreferencesValidator';
-import userPreferencesService from '../services/userPreferencesService';
+import userPreferencesValidator from '../validators/userValidator';
+import userPreferencesService from '../services/userService';
 
-class UserPreferencesController {
+class UserController {
   async changeUserPreferences(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       userPreferencesValidator.changeUserPreferences(req.body);
-      const userPreferencesBody = req.body;
+      const userPreferences = req.body;
+      const userId = req.user!.user_id;
 
-      await userPreferencesService.changeUserPreferences(userPreferencesBody);
+      await userPreferencesService.changeUserPreferences(userId, userPreferences);
 
       const responseSuccess: ResponseSuccess<undefined> = {
         statusCode: HttpStatuses.Success,
@@ -25,4 +26,4 @@ class UserPreferencesController {
   }
 }
 
-export default new UserPreferencesController();
+export default new UserController();

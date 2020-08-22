@@ -1,5 +1,5 @@
 import Joi from '../proxies/joi';
-import { UserPreferencesBody } from '../types/interfaces/userPreferences';
+import { UserPreferences } from '../types/interfaces/user';
 
 const userPreferencesSchema = Joi.object({
   preferredMaxGameCost: Joi.number().positive(),
@@ -8,9 +8,9 @@ const userPreferencesSchema = Joi.object({
   hasNotificationsTurnedOn: Joi.boolean(),
 });
 
-class UserPreferencesValidator {
-  public changeUserPreferences(signUpBody: UserPreferencesBody) {
-    const validation = userPreferencesSchema.validate(signUpBody);
+class UserValidator {
+  public changeUserPreferences(userPreferences: UserPreferences) {
+    const validation = userPreferencesSchema.validate(userPreferences);
 
     if (validation.error) {
       throw validation.error;
@@ -20,4 +20,4 @@ class UserPreferencesValidator {
   }
 }
 
-export default new UserPreferencesValidator();
+export default new UserValidator();

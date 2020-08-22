@@ -19,8 +19,8 @@ class Pg {
     });
   }
 
-  public async query<T>(queryText: string, queryValues: T[], queryParams: QueryParams)
-    : Promise<Record<string, any>[] | [][]> {
+  public async query<T>(queryText: string, queryValues: unknown[], queryParams: QueryParams)
+    : Promise<T[]> {
     const queryConfig = {
       text: queryText,
       values: queryValues,

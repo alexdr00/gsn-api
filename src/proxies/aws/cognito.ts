@@ -5,6 +5,7 @@ import { SignInBody, SignUpBody } from '../../types/interfaces/auth';
 import verror from '../verror';
 import { SessionPayload, Session } from '../../types/interfaces/session';
 import ResponseErrors from '../../constants/errors/responses';
+import userRepo from '../../repositories/userRepo';
 
 // @ts-ignore
 global.fetch = fetch;
@@ -87,10 +88,13 @@ class Cognito extends BaseAWSConfig {
     return cognitoUser.signOut();
   }
 
-  private getCognitoSessionPayload(cognitoSession: AmazonCognitoIdentity.CognitoUserSession): SessionPayload {
+  private async getCognitoSessionPayload(cognitoSession: AmazonCognitoIdentity.CognitoUserSession)
+    : Promise<SessionPayload> {
     const idToken = cognitoSession.getIdToken().getJwtToken();
     const { payload } = cognitoSession.getIdToken();
     const session = payload as Session;
+    const user = await userRepo.getUserByEmail(session.email);
+    session.user_id = user.id;
     const refreshToken = cognitoSession.getRefreshToken().getToken();
     const tokens = { refreshToken, idToken };
 
