@@ -9,6 +9,7 @@ class UserSchema {
         name VARCHAR(255) NOT NULL,
         preferred_max_game_cost BIGINT,
         country_id INT,
+        preferred_platform_id INT,
         has_notifications_turned_on BOOLEAN DEFAULT FALSE, 
         created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -16,7 +17,12 @@ class UserSchema {
         CONSTRAINT fk_country
           FOREIGN KEY (country_id)
           REFERENCES country(id)
-          ON DELETE SET DEFAULT                   
+          ON DELETE SET DEFAULT,
+          
+        CONSTRAINT fk_preferred_platform
+          FOREIGN KEY (preferred_platform_id)
+          REFERENCES platform(id)
+          ON DELETE SET NULL
       );
     `;
 

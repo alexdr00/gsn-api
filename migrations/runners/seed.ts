@@ -7,6 +7,7 @@ const migrationType = 'seed';
 const migrationFileNames = [
   'country',
   'set-default-country-to-user',
+  'platform',
 ];
 
 const migrationRunnerConfig = {
