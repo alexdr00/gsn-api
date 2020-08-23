@@ -5,6 +5,7 @@ import authRouter from './routers/authRouter';
 import errorHander from './middleware/errorHander';
 import requireAuth from './middleware/requireAuth';
 import userPreferencesRouter from './routers/userRouter';
+import gameRouter from './routers/gameRouter';
 
 class Server {
   public app: express.Application;
@@ -36,6 +37,7 @@ class Server {
     router.use('/health', (req, res) => res.send({ message: 'ok' }));
     router.use('/auth', authRouter);
     router.use('/user-preferences', userPreferencesRouter);
+    router.use('/game', gameRouter);
 
     this.app.use('/v1', router);
   }

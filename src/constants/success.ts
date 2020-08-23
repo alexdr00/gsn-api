@@ -23,6 +23,10 @@ const SuccessMessages = {
     title: 'Signed out',
     detail: 'You signed out correctly',
   },
+  RawgSearch: {
+    title: 'Search Completed',
+    detail: 'Search Completed',
+  },
 };
 
 export default SuccessMessages;

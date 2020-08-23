@@ -1,5 +1,6 @@
 import { NewUserData, User, UserPreferences } from '../types/interfaces/user';
 import pg from '../proxies/db/pg';
+import { Platform } from '../types/interfaces/platform';
 
 class UserRepo {
   public createUser(newUserData: NewUserData) {
@@ -50,6 +51,22 @@ class UserRepo {
 
     const parameters = [countryId, hasNotificationsTurnedOn, preferredMaxGameCost, preferredPlatformId, userId];
     return pg.query(query, parameters, { queryId: 'UserRepo.change' });
+  }
+
+  public async getUserPreferredPlatform(userId: number): Promise<Platform> {
+    const query = `
+      SELECT
+        platform.name,
+        platform.id,
+        platform.rawg_id AS "platformRawgId"
+      FROM "user"
+      INNER JOIN platform ON "user".preferred_platform_id = platform.id
+      WHERE "user".id = $1;
+    `;
+
+    const parameters = [userId];
+    const result = await pg.query<Platform>(query, parameters, { queryId: 'UserRepo.getUserPreferredPlatform' });
+    return result[0];
   }
 }
 

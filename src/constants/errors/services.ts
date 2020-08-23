@@ -23,6 +23,10 @@ const ServiceErrors = {
     name: 'ChangeUserPreferences',
     message: 'Failed change the user preferences',
   },
+  RawgGameSearch: {
+    name: 'RawgGameSearch',
+    message: 'Failed to search a game with the RAWG API',
+  },
 };
 
 export default ServiceErrors;
