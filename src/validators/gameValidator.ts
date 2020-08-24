@@ -1,12 +1,12 @@
 import Joi from '../proxies/joi';
 import { GameSearchQueryParams } from '../types/interfaces/game';
+import gameConstants from '../constants/gameConstants';
 
-const MAX_RESULTS_PER_PAGE = 40;
+const maxAllowed = gameConstants.MAX_RESULTS_PER_PAGE_ALLOWED;
 
 const gameSerchQueryParamsSchema = Joi.object({
-  page: Joi.number().positive(),
   searchQuery: Joi.string(),
-  resultsPerPage: Joi.number().positive().max(MAX_RESULTS_PER_PAGE).message(`We can only show max of ${MAX_RESULTS_PER_PAGE} games per page`),
+  resultsPerPage: Joi.number().positive().max(maxAllowed).message(`We can only show max of ${maxAllowed} games per page`),
 });
 
 class GameValidator {

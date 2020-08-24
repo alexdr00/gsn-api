@@ -3,12 +3,13 @@ import ServiceErrors from '../constants/errors/services';
 import userRepo from '../repositories/userRepo';
 import { GameSearchQueryParams, GameSearchParams } from '../types/interfaces/game';
 import rawg from '../proxies/rawg';
+import { Platform } from '../types/interfaces/platform';
+import { RawgGame } from '../types/interfaces/rawg';
 
 class GameService {
-  public async rawgSearch(userId: number, gameSearchQueryParams: GameSearchQueryParams) {
+  public async rawgSearch(userId: number, gameSearchQueryParams: GameSearchQueryParams): Promise<RawgGame[]> {
     try {
-      const preferredPlatform = await userRepo.getUserPreferredPlatform(userId);
-
+      const preferredPlatform: Platform = await userRepo.getUserPreferredPlatform(userId);
       const { platformRawgId } = preferredPlatform;
       const gameSearchParams: GameSearchParams = {
         ...gameSearchQueryParams,
