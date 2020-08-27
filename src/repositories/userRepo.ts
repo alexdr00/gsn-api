@@ -26,8 +26,8 @@ class UserRepo {
     `;
 
     const parameters = [email];
-    const userResult = await pg.query<User>(query, parameters, { queryId: 'UserRepo.getUserByEmail' });
-    return userResult[0];
+    const [user] = await pg.query<User>(query, parameters, { queryId: 'UserRepo.getUserByEmail' });
+    return user;
   }
 
   public changeUserPreferences(userId: number, userPreferences: UserPreferences) {
@@ -58,15 +58,16 @@ class UserRepo {
       SELECT
         platform.name,
         platform.id,
-        platform.rawg_id AS "platformRawgId"
+        platform.rawg_id AS "platformRawgId",
+        platform.slug
       FROM "user"
       INNER JOIN platform ON "user".preferred_platform_id = platform.id
       WHERE "user".id = $1;
     `;
 
     const parameters = [userId];
-    const result = await pg.query<Platform>(query, parameters, { queryId: 'UserRepo.getUserPreferredPlatform' });
-    return result[0];
+    const [platform] = await pg.query<Platform>(query, parameters, { queryId: 'UserRepo.getUserPreferredPlatform' });
+    return platform;
   }
 }
 

@@ -3,6 +3,10 @@ const StepErrors = {
     name: 'CheckBearerTokenIsValid',
     message: 'The bearer token is not valid',
   },
+  InsertPlatformsByGame: {
+    name: 'InsertPlatformsByGame',
+    message: 'Failed to insert platforms by game',
+  },
   DecodeBearerToken: {
     name: 'DecodeBearerToken',
     message: 'Failed to decode the id-token',

@@ -8,3 +8,10 @@ export interface GameSearchParams {
   resultsPerPage: number,
   platformRawgId: number
 }
+
+export interface Game {
+  id: number
+  name: string
+  rawgId: number,
+  pictureUrl: string
+}

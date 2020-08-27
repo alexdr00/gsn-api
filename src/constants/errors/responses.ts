@@ -15,6 +15,10 @@ const ResponseErrors = {
     name: 'SessionExpired',
     message: 'Your session has expired',
   },
+  GameAlreadyBeingFollowed: {
+    name: 'UnprocessableEntity',
+    message: 'You are already following this game',
+  },
 };
 
 export default ResponseErrors;

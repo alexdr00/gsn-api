@@ -26,6 +26,7 @@ module.exports = {
     'class-methods-use-this': 'off',
     'no-underscore-dangle': 'off',
     'consistent-return': 'off',
+    '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/no-throw-literal': 'off',
     'max-len': ["error", 
       { 

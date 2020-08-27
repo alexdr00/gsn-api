@@ -27,6 +27,10 @@ const ServiceErrors = {
     name: 'RawgGameSearch',
     message: 'Failed to search a game with the RAWG API',
   },
+  GameFollow: {
+    name: 'GameFollow',
+    message: 'Failed to follow a game',
+  },
 };
 
 export default ServiceErrors;

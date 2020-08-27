@@ -1,5 +1,6 @@
 export interface Platform {
   id: number,
   platformRawgId: number,
-  name: string
+  name: string,
+  slug: string
 }

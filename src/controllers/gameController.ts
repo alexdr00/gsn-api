@@ -7,6 +7,7 @@ import gameValidator from '../validators/gameValidator';
 import { GameSearchQueryParams } from '../types/interfaces/game';
 import gameService from '../services/gameService';
 import gameConstants from '../constants/gameConstants';
+import { RawgGame } from '../types/interfaces/rawg';
 
 class GameController {
   async rawgSearch(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -17,12 +18,30 @@ class GameController {
         searchQuery: req.query.searchQuery as string,
       };
       gameValidator.rawgSearch(gameSearchQueryParams);
-
       const searchResults = await gameService.rawgSearch(userId, gameSearchQueryParams);
+
       const responseSuccess: ResponseSuccess<any> = {
         statusCode: HttpStatuses.Success,
         message: SuccessMessages.RawgSearch,
         payload: searchResults,
+      };
+      baseController.handleSuccess(res, responseSuccess);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async follow(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      gameValidator.follow(req.body);
+      const rawgGame: RawgGame = req.body;
+      const userId = req.user!.user_id;
+
+      await gameService.follow(userId, rawgGame);
+
+      const responseSuccess: ResponseSuccess<any> = {
+        statusCode: HttpStatuses.Success,
+        message: SuccessMessages.FollowGame,
       };
       baseController.handleSuccess(res, responseSuccess);
     } catch (error) {

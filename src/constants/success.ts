@@ -27,6 +27,10 @@ const SuccessMessages = {
     title: 'Search Completed',
     detail: 'Search Completed',
   },
+  FollowGame: {
+    title: 'Following now',
+    detail: 'Started to follow the game sucessfully',
+  },
 };
 
 export default SuccessMessages;

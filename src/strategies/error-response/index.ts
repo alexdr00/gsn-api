@@ -15,6 +15,7 @@ class ErrorResponse {
       TokenExpiredError: notAuthorized,
       JsonWebTokenError: notAuthorized,
       SessionExpired: sessionExpiredError,
+      UnprocessableEntity: unprocessableEntityError,
     };
 
     const defaultErrorType = internalError;
