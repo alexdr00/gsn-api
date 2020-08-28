@@ -39,7 +39,7 @@ class GameController {
 
       await gameService.follow(userId, rawgGame);
 
-      const responseSuccess: ResponseSuccess<any> = {
+      const responseSuccess: ResponseSuccess<undefined> = {
         statusCode: HttpStatuses.Success,
         message: SuccessMessages.FollowGame,
       };

@@ -5,6 +5,8 @@ import mockSession from '../reusableMocks/mockSession';
 import gameController from '../../src/controllers/gameController';
 import gameService from '../../src/services/gameService';
 import gameConstants from '../../src/constants/gameConstants';
+import SuccessMessages from '../../src/constants/success';
+import HttpStatuses from '../../src/types/enums/HttpStatuses';
 
 jest.mock('services/gameService');
 
@@ -74,6 +76,40 @@ describe('Game Controller', () => {
 
       try {
         await gameController.rawgSearch(context.req, context.res, context.next);
+      } catch (error) {
+        expect(error.name).toBe('ValidationError');
+      }
+
+      expect.hasAssertions();
+    });
+  });
+
+  describe('Follow Game', () => {
+    beforeEach(() => {
+      context.followGameBody = {
+        id: random.int(1, 10),
+        name: 'Test game name',
+        slug: 'test-game-name',
+      };
+      context.userId = random.int(1, 10);
+      context.req.user.user_id = context.userId;
+    });
+
+    it('Calls the service to follow a game and returns a sucessful response', async () => {
+      context.req.body = context.followGameBody;
+      await gameController.follow(context.req, context.res, context.next);
+
+      expect(gameService.follow).toHaveBeenCalledWith(context.userId, context.followGameBody);
+      expect(context.res._getJSONData().message).toStrictEqual(SuccessMessages.FollowGame);
+      expect(context.res.statusCode).toStrictEqual(HttpStatuses.Success);
+    });
+
+    it('Returns validation errors when the body in incomplete', async () => {
+      context.followGameBody.name = undefined;
+      context.req.body = context.followGameBody;
+
+      try {
+        await gameController.follow(context.req, context.res, context.next);
       } catch (error) {
         expect(error.name).toBe('ValidationError');
       }
