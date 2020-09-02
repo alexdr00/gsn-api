@@ -2,6 +2,8 @@ import Joi from '../proxies/joi';
 import { GameSearchQueryParams } from '../types/interfaces/game';
 import gameConstants from '../constants/gameConstants';
 import { RawgGame } from '../types/interfaces/rawg';
+import { FilterParameters } from '../types/interfaces/general';
+import { filterParamsValidator } from './reusableValidators';
 
 const maxAllowed = gameConstants.MAX_RESULTS_PER_PAGE_ALLOWED;
 
@@ -38,6 +40,16 @@ class GameValidator {
     const validation = followBodySchema.validate(followGameBody, {
       allowUnknown: true,
     });
+
+    if (validation.error) {
+      throw validation.error;
+    }
+
+    return validation.value;
+  }
+
+  public getFollowedGamesByUser(getFollowedGamesByUserQueryParams: FilterParameters) {
+    const validation = filterParamsValidator.validate(getFollowedGamesByUserQueryParams);
 
     if (validation.error) {
       throw validation.error;

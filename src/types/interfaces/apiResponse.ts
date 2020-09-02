@@ -24,4 +24,8 @@ export interface ResponseSuccess<T> {
   statusCode?: HttpStatuses.Success | HttpStatuses.Created,
   payload?: T,
   message?: ApiMessage
+  page?: number,
+  total?: number,
+  sorted?: string,
+  limit?: number
 }

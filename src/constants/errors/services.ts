@@ -31,6 +31,10 @@ const ServiceErrors = {
     name: 'GameFollow',
     message: 'Failed to follow a game',
   },
+  GetFollowedGamesByUser: {
+    name: 'GetFollowedGamesByUser',
+    message: 'Failed get all the followed games by the user',
+  },
 };
 
 export default ServiceErrors;

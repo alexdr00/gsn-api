@@ -1,7 +1,12 @@
 import pg from '../proxies/db/pg';
-import { Game } from '../types/interfaces/game';
+import { Game, GetFollowedGamesByUserResult } from '../types/interfaces/game';
 import { RawgGame } from '../types/interfaces/rawg';
-import { InsertedRow } from '../types/interfaces/general';
+import { FilterParameters, InsertedRow } from '../types/interfaces/general';
+
+interface GetFollowedGamesByUserData {
+  userId: number,
+  preferredPlatformId: number,
+}
 
 class GameRepo {
   public async getGameByRawgId(rawgId: number): Promise<Game | undefined> {
@@ -53,6 +58,44 @@ class GameRepo {
     const parameters = [gameId, userId];
     const [followedGame] = await pg.query<{ id: number } | undefined>(query, parameters, { queryId: 'GameRepo.getFollowedGameByUser' });
     return followedGame;
+  }
+
+  public async getFollowedGamesByUser(filterParams: FilterParameters, userData: GetFollowedGamesByUserData)
+    : Promise<GetFollowedGamesByUserResult[]> {
+    const {
+      sortBy, limit, page, searchQuery,
+    } = filterParams;
+    const { preferredPlatformId } = userData;
+
+    const query = `
+      SELECT 
+        game.id,
+        game.name,
+        game.picture_url AS "pictureUrl",
+        game.rawg_id AS "rawgId",
+        ph.price,
+        ph.price_with_sale AS "priceWithSale",
+        ph.timestamp AS "priceLastCheckedOn",
+        count(*) OVER() AS total
+      FROM game
+        INNER JOIN game_by_platform gbp ON game.id = gbp.game_id
+        LEFT JOIN (
+          select distinct on (ph.game_id) *
+          from price_history ph
+          order by ph.game_id, ph.timestamp desc 
+        ) ph ON game.id = ph.game_id
+      WHERE gbp.platform_id = $1
+        AND LOWER(game.name) LIKE COALESCE(LOWER($2), LOWER(game.name))
+      ORDER BY game.name ${sortBy}
+      LIMIT $3
+      OFFSET $4
+    `;
+
+    const offset = limit * (page - 1);
+    const searchQueryFormatted = searchQuery ? `${searchQuery}%` : null;
+    const parameters = [preferredPlatformId, searchQueryFormatted, limit, offset];
+    const result = await pg.query<GetFollowedGamesByUserResult>(query, parameters, { queryId: 'GameRepo.getFollowedGamesByUser' });
+    return result;
   }
 }
 

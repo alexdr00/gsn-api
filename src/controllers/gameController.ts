@@ -4,10 +4,11 @@ import SuccessMessages from '../constants/success';
 import HttpStatuses from '../types/enums/HttpStatuses';
 import baseController from './baseController';
 import gameValidator from '../validators/gameValidator';
-import { GameSearchQueryParams } from '../types/interfaces/game';
+import { GameSearchQueryParams, GameWithPrice, GetFollowedGamesByUserResult } from '../types/interfaces/game';
 import gameService from '../services/gameService';
 import gameConstants from '../constants/gameConstants';
 import { RawgGame } from '../types/interfaces/rawg';
+import { FilterParameters } from '../types/interfaces/general';
 
 class GameController {
   async rawgSearch(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -42,6 +43,39 @@ class GameController {
       const responseSuccess: ResponseSuccess<undefined> = {
         statusCode: HttpStatuses.Success,
         message: SuccessMessages.FollowGame,
+      };
+      baseController.handleSuccess(res, responseSuccess);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getFollowedGamesByUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const filterParams: FilterParameters = {
+        page: Number(req.query.page) || 1,
+        limit: Number(req.query.limit) || 20,
+        searchQuery: req.query.searchQuery as string,
+        sortBy: req.query.sortBy as 'ASC' | 'DESC' || 'ASC',
+      };
+      gameValidator.getFollowedGamesByUser(filterParams);
+      const userId = req.user!.user_id;
+
+      const games: GetFollowedGamesByUserResult[] = await gameService.getFollowedGamesByUser(filterParams, userId);
+
+      const resultTotal = Number(games[0].total);
+      const gamesTotalExcluded = games.map((game) => {
+        const { total, ...gameWithoutTotalResult } = game;
+        return gameWithoutTotalResult;
+      });
+
+      const responseSuccess: ResponseSuccess<GameWithPrice[]> = {
+        statusCode: HttpStatuses.Success,
+        payload: gamesTotalExcluded,
+        sorted: filterParams.sortBy,
+        page: filterParams.page,
+        limit: filterParams.limit,
+        total: resultTotal,
       };
       baseController.handleSuccess(res, responseSuccess);
     } catch (error) {

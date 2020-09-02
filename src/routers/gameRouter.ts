@@ -12,6 +12,7 @@ class GameRouter {
   private mountRoutes() {
     this.router.get('/rawg-search', gameController.rawgSearch);
     this.router.post('/follow', gameController.follow);
+    this.router.get('/follow', gameController.getFollowedGamesByUser);
   }
 }
 

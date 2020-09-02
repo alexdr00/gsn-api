@@ -1,13 +1,16 @@
 import verror from '../proxies/verror';
 import ServiceErrors from '../constants/errors/services';
 import userRepo from '../repositories/userRepo';
-import { GameSearchQueryParams, GameSearchParams } from '../types/interfaces/game';
+import {
+  GameSearchQueryParams, GameSearchParams, GetFollowedGamesByUserResult,
+} from '../types/interfaces/game';
 import rawg from '../proxies/rawg';
 import { Platform } from '../types/interfaces/platform';
 import { RawgGame } from '../types/interfaces/rawg';
 import gameRepo from '../repositories/gameRepo';
 import insertPlatformsByGame from '../steps/insertPlatformByGame';
 import ResponseErrors from '../constants/errors/responses';
+import { FilterParameters } from '../types/interfaces/general';
 
 class GameService {
   public async rawgSearch(userId: number, gameSearchQueryParams: GameSearchQueryParams): Promise<RawgGame[]> {
@@ -61,6 +64,24 @@ class GameService {
           rawgId: rawgGame.id,
           userId,
         },
+      });
+    }
+  }
+
+  public async getFollowedGamesByUser(filterParameters: FilterParameters, userId: number)
+    : Promise<GetFollowedGamesByUserResult[]> {
+    try {
+      const userPreferredPlatform: Platform = await userRepo.getUserPreferredPlatform(userId);
+      const userData = { preferredPlatformId: userPreferredPlatform.id, userId };
+      const games = await gameRepo.getFollowedGamesByUser(filterParameters, userData);
+
+      return games;
+    } catch (error) {
+      throw verror.createError({
+        name: ServiceErrors.GetFollowedGamesByUser.name,
+        message: ServiceErrors.GetFollowedGamesByUser.message,
+        cause: error,
+        debugParams: { filterParameters, userId },
       });
     }
   }
