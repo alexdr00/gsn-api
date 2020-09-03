@@ -117,4 +117,96 @@ describe('Game Controller', () => {
       expect.hasAssertions();
     });
   });
+
+  describe('Get Followed Games By User', () => {
+    beforeEach(() => {
+      context.page = 1;
+      context.limit = 10;
+      context.searchQuery = 'The';
+      context.sortBy = 'DESC';
+      context.userId = random.int(1, 10);
+      context.followedGames = [
+        {
+          id: random.int(),
+        },
+        {
+          id: random.int(),
+        },
+      ];
+      mocked(gameService.getFollowedGamesByUser).mockResolvedValue(context.followedGames);
+    });
+
+    it('Calls the game service to get all games followed by the user with proper default values', async () => {
+      const { userId } = context;
+      context.req.user.user_id = userId;
+      context.req.query = {};
+      const defaultFilterParams = {
+        page: 1,
+        limit: 20,
+        searchQuery: undefined,
+        sortBy: 'ASC',
+      };
+
+      await gameController.getFollowedGamesByUser(context.req, context.res, context.next);
+      expect(gameService.getFollowedGamesByUser).toHaveBeenCalledWith(defaultFilterParams, userId);
+    });
+
+    it('Calls the game service to get all games followed by the user with passed values', async () => {
+      const { userId } = context;
+      context.req.user.user_id = userId;
+      const filterParams = {
+        page: random.int(1, 10),
+        limit: random.int(1, 10),
+        searchQuery: 'The',
+        sortBy: 'DESC',
+      };
+      context.req.query = { ...filterParams };
+
+      await gameController.getFollowedGamesByUser(context.req, context.res, context.next);
+      expect(gameService.getFollowedGamesByUser).toHaveBeenCalledWith(filterParams, userId);
+    });
+
+    it('Returns payload as empty array if no followed games were returned', async () => {
+      mocked(gameService.getFollowedGamesByUser).mockResolvedValue([]);
+
+      await gameController.getFollowedGamesByUser(context.req, context.res, context.next);
+      const { payload } = context.res._getJSONData();
+      expect(payload).toStrictEqual([]);
+    });
+
+    it('Includes some of the filter params inside the reseponse itself', async () => {
+      const { userId } = context;
+      context.req.user.user_id = userId;
+      const filterParams = {
+        page: random.int(1, 10),
+        limit: random.int(1, 10),
+        searchQuery: 'The',
+        sortBy: 'DESC',
+      };
+      context.req.query = { ...filterParams };
+
+      await gameController.getFollowedGamesByUser(context.req, context.res, context.next);
+      const { page, limit, sorted } = context.res._getJSONData();
+      expect(page).toBe(filterParams.page);
+      expect(limit).toBe(filterParams.limit);
+      expect(sorted).toBe(filterParams.sortBy);
+    });
+
+    it('Grabs the first result\'s total, appends it to the response and delete it from the payload items', async () => {
+      const { userId } = context;
+      const mockTotal = random.int(1, 10);
+      context.followedGames[0].total = mockTotal;
+      context.req.user.user_id = userId;
+      mocked(gameService.getFollowedGamesByUser).mockResolvedValue(context.followedGames);
+
+      await gameController.getFollowedGamesByUser(context.req, context.res, context.next);
+
+      const { total, payload } = context.res._getJSONData();
+      const { total: resultTotal, ...resultWithoutTotal } = context.followedGames[0];
+      context.followedGames[0] = resultWithoutTotal;
+
+      expect(total).toBe(mockTotal);
+      expect(payload).toStrictEqual(context.followedGames);
+    });
+  });
 });

@@ -63,11 +63,15 @@ class GameController {
 
       const games: GetFollowedGamesByUserResult[] = await gameService.getFollowedGamesByUser(filterParams, userId);
 
-      const resultTotal = Number(games[0].total);
-      const gamesTotalExcluded = games.map((game) => {
-        const { total, ...gameWithoutTotalResult } = game;
-        return gameWithoutTotalResult;
-      });
+      let resultTotal;
+      let gamesTotalExcluded: GameWithPrice[] = [];
+      if (games.length) {
+        resultTotal = Number(games[0].total);
+        gamesTotalExcluded = games.map((game) => {
+          const { total, ...gameWithoutTotalResult } = game;
+          return gameWithoutTotalResult;
+        });
+      }
 
       const responseSuccess: ResponseSuccess<GameWithPrice[]> = {
         statusCode: HttpStatuses.Success,

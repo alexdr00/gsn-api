@@ -146,4 +146,50 @@ describe('Game Service', () => {
       expect.hasAssertions();
     });
   });
+
+  describe('Get Followed Games By User', () => {
+    beforeEach(() => {
+      context.filterParams = {
+        page: 1,
+        limit: 10,
+        searchQuery: 'The',
+        sortBy: 'DESC',
+      };
+      context.userId = random.int(1, 10);
+    });
+
+    it('Gets the user preferred platform so we can filter it while fetching the followed games by the user', async () => {
+      const mockPlatform = { id: random.int(1, 10) };
+      // @ts-ignore
+      mocked(userRepo.getUserPreferredPlatform).mockResolvedValue(mockPlatform);
+
+      const userData = { userId: context.userId, preferredPlatformId: mockPlatform.id };
+      await gameService.getFollowedGamesByUser(context.filterParams, context.userId);
+      expect(userRepo.getUserPreferredPlatform).toHaveBeenCalledWith(context.userId);
+      expect(gameRepo.getFollowedGamesByUser).toHaveBeenCalledWith(context.filterParams, userData);
+    });
+
+    it('Returns as response to what the gameRepo "getFollowedGamesByUser" returns', async () => {
+      const mockFollowedGames = [{ id: random.int(1, 10) }, { id: random.int(1, 10) }];
+      // @ts-ignore
+      mocked(gameRepo.getFollowedGamesByUser).mockResolvedValue(mockFollowedGames);
+
+      const result = await gameService.getFollowedGamesByUser(context.filterParams, context.userId);
+      expect(result).toStrictEqual(mockFollowedGames);
+    });
+
+    it('Returns a detailed error when the service fails', async () => {
+      const testError = new Error('Test error here!');
+      mocked(gameRepo.getFollowedGamesByUser).mockImplementation(() => { throw testError; });
+
+      try {
+        await gameService.getFollowedGamesByUser(context.filterParams, context.userId);
+      } catch (err) {
+        expect(err.name).toBe(ServiceErrors.GetFollowedGamesByUser.name);
+        expect(err.message).toBe(ServiceErrors.GetFollowedGamesByUser.message);
+      }
+
+      expect.hasAssertions();
+    });
+  });
 });
