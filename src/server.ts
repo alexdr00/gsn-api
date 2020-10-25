@@ -6,6 +6,7 @@ import errorHander from './middleware/errorHander';
 import requireAuth from './middleware/requireAuth';
 import userPreferencesRouter from './routers/userRouter';
 import gameRouter from './routers/gameRouter';
+import gameSaleHunterRouter from './routers/gameSaleHunter';
 
 class Server {
   public app: express.Application;
@@ -38,6 +39,7 @@ class Server {
     router.use('/auth', authRouter);
     router.use('/user-preferences', userPreferencesRouter);
     router.use('/game', gameRouter);
+    router.use('/game-sale-hunter', gameSaleHunterRouter);
 
     this.app.use('/v1', router);
   }

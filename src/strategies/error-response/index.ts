@@ -4,18 +4,21 @@ import validationError from './validationError';
 import unprocessableEntityError from './unprocessableEntityError';
 import notAuthorized from './notAuthorized';
 import sessionExpiredError from './sessionExpiredError';
+import notFoundError from './notFoundError';
+import { ErrorResponseNames } from '../../types/enums/Errors';
 
 class ErrorResponse {
   public static createErrorResponse(error: any) {
     const errorTypesByName: any = {
-      ValidationError: error.isJoi ? joiValidationError : validationError,
-      UsernameExistsException: unprocessableEntityError,
-      NotAuthorizedException: notAuthorized,
-      Unauthorized: notAuthorized,
-      TokenExpiredError: notAuthorized,
-      JsonWebTokenError: notAuthorized,
-      SessionExpired: sessionExpiredError,
-      UnprocessableEntity: unprocessableEntityError,
+      [ErrorResponseNames.ValidationError]: error.isJoi ? joiValidationError : validationError,
+      [ErrorResponseNames.UsernameExistsException]: unprocessableEntityError,
+      [ErrorResponseNames.NotAuthorizedException]: notAuthorized,
+      [ErrorResponseNames.Unauthorized]: notAuthorized,
+      [ErrorResponseNames.TokenExpiredError]: notAuthorized,
+      [ErrorResponseNames.JsonWebTokenError]: notAuthorized,
+      [ErrorResponseNames.SessionExpired]: sessionExpiredError,
+      [ErrorResponseNames.UnprocessableEntity]: unprocessableEntityError,
+      [ErrorResponseNames.NotFound]: notFoundError,
     };
 
     const defaultErrorType = internalError;

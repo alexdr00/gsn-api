@@ -1,6 +1,7 @@
 import { NewUserData, User, UserPreferences } from '../types/interfaces/user';
 import pg from '../proxies/db/pg';
 import { Platform } from '../types/interfaces/platform';
+import { Country } from '../types/interfaces/country';
 
 class UserRepo {
   public createUser(newUserData: NewUserData) {
@@ -68,6 +69,24 @@ class UserRepo {
     const parameters = [userId];
     const [platform] = await pg.query<Platform>(query, parameters, { queryId: 'UserRepo.getUserPreferredPlatform' });
     return platform;
+  }
+
+  public async getUserCountryData(userId: number): Promise<Country> {
+    const query = `
+      SELECT
+        country.name,
+        country.id,
+        country.currency,
+        country.language,
+        country.iso
+      FROM "user"
+      INNER JOIN country ON "user".country_id = country.id
+      WHERE "user".id = $1;
+    `;
+
+    const parameters = [userId];
+    const [countryData] = await pg.query<Country>(query, parameters, { queryId: 'UserRepo.getUserCountryData' });
+    return countryData;
   }
 }
 

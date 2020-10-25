@@ -29,3 +29,4 @@ services:
       - .env
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
+      - "9229:9229"

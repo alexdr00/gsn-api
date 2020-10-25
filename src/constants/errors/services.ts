@@ -35,6 +35,10 @@ const ServiceErrors = {
     name: 'GetFollowedGamesByUser',
     message: 'Failed get all the followed games by the user',
   },
+  GetGameSale: {
+    name: 'GetGameSale',
+    message: 'Failed get the sale the provided game',
+  },
 };
 
 export default ServiceErrors;

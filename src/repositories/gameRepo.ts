@@ -25,6 +25,22 @@ class GameRepo {
     return game;
   }
 
+  public async getGameById(gameId: number): Promise<Game | undefined> {
+    const query = `
+      SELECT 
+        id,
+        rawg_id AS rawgId,
+        name,
+        picture_url AS pictureUrl
+      FROM game
+      WHERE id = $1;
+    `;
+
+    const parameters = [gameId];
+    const [game] = await pg.query<Game | undefined>(query, parameters, { queryId: 'GameRepo.getGameById' });
+    return game;
+  }
+
   public async insertGame(rawgGame: RawgGame): Promise<number> {
     const { name, id, background_image: backgroundImage } = rawgGame;
 
