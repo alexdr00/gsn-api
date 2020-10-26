@@ -5,7 +5,6 @@ import GameSaleHunterScrapper from '../strategies/game-sale-hunter';
 import { ScrapperParams } from '../types/interfaces/gameSaleHunter';
 import gameRepo from '../repositories/gameRepo';
 import shouldExistPrecondition from '../preconditions/shouldExistPrecondition';
-import { Game } from '../types/interfaces/game';
 
 class GameService {
   public async getGameSale(gameId: number, userId: number): Promise<void> {
@@ -19,7 +18,7 @@ class GameService {
       const scrapperParams: ScrapperParams = { country, game: game! };
 
       const SaleHunterScrapper = GameSaleHunterScrapper.getScrapperMethodBasedOnPlatform(userPreferredPlatform);
-      SaleHunterScrapper.run(scrapperParams);
+      await SaleHunterScrapper.run(scrapperParams);
     } catch (error) {
       throw verror.createError({
         name: ServiceErrors.GetGameSale.name,
