@@ -16,3 +16,8 @@ export interface GameSaleHunterOptions {
   platform: Platform
   country: Country
 }
+
+export interface GamePrices {
+  normalPrice: number | null,
+  priceWithSale: number | null,
+}

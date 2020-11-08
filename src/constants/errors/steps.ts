@@ -19,9 +19,13 @@ const StepErrors = {
     name: 'GetPsnStoreSearchResults',
     message: 'Failed to get PSN store search results with the specifed game',
   },
-  GetPsnGameUrl: {
-    name: 'GetPsnGameUrl',
+  GetPsnGameUrlFromSearchResults: {
+    name: 'GetPsnGameUrlFromSearchResults',
     message: 'Failed to get the PSN game url',
+  },
+  GetGamesPrices: {
+    name: 'GetGamesPrices',
+    message: 'Failed to get the provided game prices',
   },
 };
 
