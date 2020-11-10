@@ -21,3 +21,9 @@ export interface GamePrices {
   normalPrice: number | null,
   priceWithSale: number | null,
 }
+
+export interface PsnStoreSearchResults {
+  price: string | null,
+  strikedPrice: string | null | undefined,
+  name: string | null
+}
