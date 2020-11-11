@@ -15,9 +15,13 @@ const StepErrors = {
     name: 'ThrowSessionExpiredError',
     message: 'Expected throw of Session Expired error',
   },
-  GetPsnStoreSearchResults: {
-    name: 'GetPsnStoreSearchResults',
-    message: 'Failed to get PSN store search results with the specifed game',
+  ScrapePsnStoreSearchResults: {
+    name: 'ScrapePsnStoreSearchResults',
+    message: 'Failed to scrape the search results from PSN Store',
+  },
+  GetRelevantDataFromScrape: {
+    name: 'GetRelevantDataFromScrape',
+    message: 'Failed to get the relevant data from the psn store search result scrape',
   },
   GetPsnGameUrlFromSearchResults: {
     name: 'GetPsnGameUrlFromSearchResults',

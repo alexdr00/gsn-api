@@ -30,7 +30,7 @@ module.exports = {
     '@typescript-eslint/no-throw-literal': 'off',
     'max-len': ["error", 
       { 
-        "code": 120,
+        "code": 150,
         "ignoreComments": true,
         "ignoreUrls": true,
         "ignoreStrings": true,

@@ -22,8 +22,16 @@ export interface GamePrices {
   priceWithSale: number | null,
 }
 
-export interface PsnStoreSearchResults {
-  price: string | null,
+export interface ScrappedPsnStoreSearchResult {
+  name: string | null | undefined,
+  price: string | null | undefined,
+  platform: string | null | undefined,
   strikedPrice: string | null | undefined,
-  name: string | null
+}
+
+export interface PsnStoreSearchResult {
+  name: string,
+  price: string,
+  platform: string,
+  strikedPrice: string | null | undefined,
 }

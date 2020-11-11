@@ -1,45 +1,47 @@
+import puppeteer from 'puppeteer';
 import jsdom from 'jsdom';
 import verror from '../../../../../proxies/verror';
 import StepErrors from '../../../../../constants/errors/steps';
-import { PsnStoreSearchResults } from '../../../../../types/interfaces/gameSaleHunter';
-import puppeteer = require('puppeteer');
+import { puppeteerConfig } from '../../../../../constants/general';
+import { ScrappedPsnStoreSearchResult } from '../../../../../types/interfaces/gameSaleHunter';
 
 const { JSDOM } = jsdom;
 
-async function getPsnStoreSearchResults(searchResultsUrl: string): Promise<PsnStoreSearchResults[]> {
+async function scrapePsnStoreSearchResults(searchResultsUrl: string): Promise<ScrappedPsnStoreSearchResult[]> {
   try {
-    const browser = await puppeteer.launch({ executablePath: '/usr/bin/chromium-browser', args: ['--no-sandbox'], headless: true });
+    const browser = await puppeteer.launch(puppeteerConfig);
     const page = await browser.newPage();
-    await page.goto(searchResultsUrl);
+    await page.goto(searchResultsUrl, { waitUntil: 'networkidle0' });
     const pageMarkup = await page.content();
+    await browser.close();
     const dom = new JSDOM(pageMarkup);
-    // const page = await JSDOM.fromURL(searchResultsUrl);
     const { document } = dom.window;
 
     const resultTileLinks = document.querySelectorAll('.ems-sdk-product-tile-link');
     const resultTileLinksIterable = Array.from(resultTileLinks);
 
-    let searchResults = resultTileLinksIterable.map((tileLink) => {
+    const scrapedPsnStoreSearchResults = resultTileLinksIterable.map((tileLink) => {
       const gameNameElement = tileLink.querySelector('span[data-qa="ems-sdk-product-tile-name"]');
       const gamePriceElement = tileLink.querySelector('span[data-qa="ems-sdk-product-tile-price"]');
       const gameStrikedPriceElement = tileLink.querySelector('strike.price--strikethrough');
-      const searchResult = {} as PsnStoreSearchResults;
+      const gamePlatformElement = tileLink.querySelector('span[data-qa="ems-sdk-product-tile-image-badge"]');
+      const searchResult = {} as ScrappedPsnStoreSearchResult;
 
       if (gameNameElement && gamePriceElement) {
         searchResult.name = gameNameElement.textContent;
         searchResult.price = gamePriceElement.textContent;
         searchResult.strikedPrice = gameStrikedPriceElement?.textContent;
+        searchResult.platform = gamePlatformElement?.textContent;
       }
 
       return searchResult;
     });
 
-    searchResults = searchResults.filter((searchResult) => searchResult.name && searchResult.price);
-    return searchResults;
+    return scrapedPsnStoreSearchResults;
   } catch (error) {
     throw verror.createError({
-      name: StepErrors.GetPsnStoreSearchResults.name,
-      message: StepErrors.GetPsnStoreSearchResults.message,
+      name: StepErrors.ScrapePsnStoreSearchResults.name,
+      message: StepErrors.ScrapePsnStoreSearchResults.message,
       cause: error,
       debugParams: { searchResultsUrl },
     });
@@ -47,4 +49,4 @@ async function getPsnStoreSearchResults(searchResultsUrl: string): Promise<PsnSt
 }
 
 
-export default getPsnStoreSearchResults;
+export default scrapePsnStoreSearchResults;
