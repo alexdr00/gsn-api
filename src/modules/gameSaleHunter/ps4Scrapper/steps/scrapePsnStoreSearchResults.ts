@@ -1,9 +1,9 @@
 import puppeteer from 'puppeteer';
 import jsdom from 'jsdom';
-import verror from '../../../../../proxies/verror';
-import StepErrors from '../../../../../constants/errors/steps';
-import { puppeteerConfig } from '../../../../../constants/general';
-import { ScrappedPsnStoreSearchResult } from '../../../../../types/interfaces/gameSaleHunter';
+import verror from '../../../../proxies/verror';
+import StepErrors from '../../../../constants/errors/steps';
+import { puppeteerConfig } from '../../../../constants/general';
+import { ScrappedPsnStoreSearchResult } from '../../../../types/interfaces/gameSaleHunter';
 
 const { JSDOM } = jsdom;
 

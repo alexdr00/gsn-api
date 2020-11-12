@@ -1,32 +1,30 @@
 import stringSimilarity from 'string-similarity';
-import verror from '../../../../../proxies/verror';
-import StepErrors from '../../../../../constants/errors/steps';
-import { PsnStoreSearchResult } from '../../../../../types/interfaces/gameSaleHunter';
+import verror from '../../../../proxies/verror';
+import StepErrors from '../../../../constants/errors/steps';
+import { GamePrice } from '../../../../types/interfaces/gameSaleHunter';
 
 const specialCharactersToRemove = ['™', '®'];
 
-function getBestNameMatchFromResults(providedGameName: string, searchResults: PsnStoreSearchResult[]): PsnStoreSearchResult | {} {
+function getGameFromResultsBestMatch(providedGameName: string, searchResults: GamePrice[]): GamePrice | {} {
   try {
-    let bestGameMatch;
+    let bestMatch = {};
 
     if (searchResults.length) {
       const providedGameNameLowercase = providedGameName.toLowerCase();
       const resultGameNames = searchResults.map((searchResult) => searchResult.name.toLowerCase());
       const gameNamesSpecialCharsRemoved = removeSpecialCharsFromGameNames(resultGameNames);
 
-      const bestGameMatchResult = stringSimilarity.findBestMatch(providedGameNameLowercase, gameNamesSpecialCharsRemoved);
-      const bestGameMatchName = resultGameNames[bestGameMatchResult.bestMatchIndex];
+      const bestGameResultMatch = stringSimilarity.findBestMatch(providedGameNameLowercase, gameNamesSpecialCharsRemoved);
+      const bestMatchGameName = resultGameNames[bestGameResultMatch.bestMatchIndex];
 
-      bestGameMatch = searchResults.find((searchResult) => searchResult.name.toLowerCase() === bestGameMatchName);
-    } else {
-      bestGameMatch = {};
+      bestMatch = searchResults.find((searchResult) => searchResult.name.toLowerCase() === bestMatchGameName) as GamePrice;
     }
 
-    return bestGameMatch!;
+    return bestMatch;
   } catch (error) {
     throw verror.createError({
-      name: StepErrors.GetPsnGameUrlFromSearchResults.name,
-      message: StepErrors.GetPsnGameUrlFromSearchResults.message,
+      name: StepErrors.GetGameFromResultsBestMatch.name,
+      message: StepErrors.GetGameFromResultsBestMatch.message,
       cause: error,
       debugParams: { providedGameName, searchResults },
     });
@@ -41,4 +39,4 @@ function getBestNameMatchFromResults(providedGameName: string, searchResults: Ps
   }
 }
 
-export default getBestNameMatchFromResults;
+export default getGameFromResultsBestMatch;

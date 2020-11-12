@@ -17,7 +17,7 @@ export interface Game {
 }
 
 export interface GameWithPrice extends Game {
-  priceWithSale: string | null,
+  strikedPrice: string | null,
   price: string | null,
   priceLastCheckedOn: string | null,
 }

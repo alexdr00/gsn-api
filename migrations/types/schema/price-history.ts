@@ -8,7 +8,7 @@ class PriceHistorySchema {
         game_id INT,
         platform_id INT,
         price BIGINT,
-        price_with_sale BIGINT,
+        striked_price BIGINT,
         timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 
         CONSTRAINT fk_game

@@ -23,8 +23,8 @@ const StepErrors = {
     name: 'GetRelevantDataFromScrape',
     message: 'Failed to get the relevant data from the psn store search result scrape',
   },
-  GetPsnGameUrlFromSearchResults: {
-    name: 'GetPsnGameUrlFromSearchResults',
+  GetGameFromResultsBestMatch: {
+    name: 'GetGameFromResultsBestMatch',
     message: 'Failed to get the PSN game url',
   },
   GetGamesPrices: {

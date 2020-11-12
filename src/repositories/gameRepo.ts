@@ -90,7 +90,7 @@ class GameRepo {
         game.picture_url AS "pictureUrl",
         game.rawg_id AS "rawgId",
         ph.price,
-        ph.price_with_sale AS "priceWithSale",
+        ph.striked_price AS "strikedPrice",
         ph.timestamp AS "priceLastCheckedOn",
         count(*) OVER() AS total
       FROM game

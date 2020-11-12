@@ -29,7 +29,7 @@ export interface ScrappedPsnStoreSearchResult {
   strikedPrice: string | null | undefined,
 }
 
-export interface PsnStoreSearchResult {
+export interface GamePrice {
   name: string,
   price: string,
   platform: string,
